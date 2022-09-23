@@ -3,12 +3,14 @@
 #include "../iterators/randomAccessIt.hpp"
 #include "../iterators/itTraits.hpp"
 #include "../iterators/reverseIt.hpp"
+#include <memory>
 
 
 
 namespace ft{
 
-    template < class T, class Alloc = std::allocator<T> > class vector
+    template < class T, class Alloc = std::allocator<T> > 
+    class vector
     {
         public :
 
@@ -35,10 +37,46 @@ namespace ft{
         public:
 
             /* CONSTRUCTORS & DESTRUCTOR */
-            explicit vector (const allocator_type& alloc = allocator_type());
-            explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());	
-            template <class InputIterator> vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());	
-            vector (const vector& x);
+
+            /* empty container constructor (default constructor), constructs an empty container, with no elements. */
+            explicit vector (const allocator_type& alloc = allocator_type()) : _size(0), _capacity(0), _content(NULL), _alloc(alloc){ return ; }
+
+            /* fill constructor, constructs a container with n elements. Each element is a copy of val. */
+            explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()){
+                if (n < 0)
+                    throw std::out_of_range("ft::vector");
+                _size = _capacity = n;
+                _alloc = alloc;
+                _content = _alloc.allocate(n);
+                while(n--)
+                    _alloc.construct(_content + n, val);
+                return ;
+            }	
+
+            /* range constructor, constructs a container with as many elements as the range [first,last), 
+            with each element constructed from its corresponding element in that range, in the same order. */
+            template <class InputIterator> 
+            vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()){
+                _alloc = alloc;
+                _size = _capacity = std::distance(first, last);
+                _content = _alloc.allocate(_size);
+                for(size_t i = 0; first != last; first++, i++)
+                {
+                    _alloc.construct(_content + i, *first);
+                }
+            }	
+
+            /* copy constructor, constructs a container with a copy of each of the elements in x, in the same order. */
+            vector (const vector& x){
+                _capacity = _size = x.size();
+                _alloc = x.get_allocator()
+                _content = _alloc.allocate(_size);
+                iterator first = x.begin();
+                iterator end = x.end();
+                for (size_t i = 0; first != end; first, i++)
+                    _alloc.construct(_content + i, *first);
+            }
+
             ~vector();
             vector& operator= (const vector& x);
 
