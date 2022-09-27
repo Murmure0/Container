@@ -6,7 +6,7 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 RM = rm -rf
 
-SOURCES = 	
+SOURCES = 	./src/test/test.cpp
 
 
 OBJECTS = $(SOURCES:%.cpp=%.o)

@@ -4,6 +4,7 @@
 #include "../iterators/itTraits.hpp"
 #include "../iterators/reverseIt.hpp"
 #include <memory>
+#include <iterator>
 
 
 
@@ -55,8 +56,14 @@ namespace ft{
 
             /* range constructor, constructs a container with as many elements as the range [first,last), 
             with each element constructed from its corresponding element in that range, in the same order. */
+            /* enable_if : we want to write a template that only makes sense for some types, 
+            we must make it fail deduction for invalid types right in the declaration, to cause substitution failure. 
+            If the invalid type sneaks past the overload candidate selection phase, the program won't compile. */
+
+
             template <class InputIterator> 
-            vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()){
+            vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), 
+            typename std::enable_if<!std::is_integral<InputIterator>::value>::type * = NULL){
                 _alloc = alloc;
                 _size = _capacity = std::distance(first, last);
                 _content = _alloc.allocate(_size);
@@ -65,11 +72,21 @@ namespace ft{
                     _alloc.construct(_content + i, *first);
                 }
             }	
+            // template <class InputIterator> 
+            // vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()){
+            //     _alloc = alloc;
+            //     _size = _capacity = std::distance(first, last);
+            //     _content = _alloc.allocate(_size);
+            //     for(size_t i = 0; first != last; first++, i++)
+            //     {
+            //         _alloc.construct(_content + i, *first);
+            //     }
+            // }	
 
             /* copy constructor, constructs a container with a copy of each of the elements in x, in the same order. */
             vector (const vector& x){
                 _capacity = _size = x.size();
-                _alloc = x.get_allocator()
+                _alloc = x.get_allocator();
                 _content = _alloc.allocate(_size);
                 iterator first = x.begin();
                 iterator end = x.end();
@@ -77,8 +94,24 @@ namespace ft{
                     _alloc.construct(_content + i, *first);
             }
 
-            ~vector();
-            vector& operator= (const vector& x);
+            /* destroys all container elements, and deallocates all the storage capacity allocated by the vector using its allocator. */
+            ~vector(){
+                _alloc.deallocate(_content, _capacity);
+                _alloc.destroy(_content);
+            }
+            
+            /* Copies all the elements from x into the container. */
+            vector& operator= (const vector& x){
+                _alloc.deallocate(_content, _capacity);
+                _alloc.destroy(_content);
+
+                _capacity = _size = x.size();
+                _content = _alloc.allocate(_size);
+                iterator first = x.begin();
+                iterator end = x.end();
+                for (size_t i = 0; first != end; first, i++)
+                    _alloc.construct(_content + i, *first);
+            }
 
             /* ITERATORS */
             iterator begin();

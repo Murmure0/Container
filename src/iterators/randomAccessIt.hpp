@@ -1,7 +1,8 @@
 #pragma once
 
-namespace ft
-{
+#include "itTraits.hpp"
+
+namespace ft{
 
     template<typename T>
     class random_access_iterator : ft::Iterator<ft::random_access_iterator_tag, T>
@@ -29,7 +30,7 @@ namespace ft
                 return (*this);
             else
             {
-                this._current = t._current;
+                _current = t._current;
                 return (*this);
             }
         }
@@ -43,7 +44,7 @@ namespace ft
 
         /* INCREMENT/DECREMENT OPERATORS */
 
-        random_access_iterator& operator++{
+        random_access_iterator& operator++(){
             _current++; 
             return (*this);
         }
@@ -131,6 +132,6 @@ namespace ft
     typename ft::random_access_iterator<Iterator1>::difference_type
     operator-(const ft::random_access_iterator<Iterator1>& x, const ft::random_access_iterator<Iterator2>& y)
     {
-        return (x.base() - y.base();)
+        return (x.base() - y.base());
     }
 }
