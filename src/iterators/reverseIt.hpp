@@ -31,11 +31,12 @@ namespace ft{
         }
         
         /* OPERATORS */
-        template <class U> reverse_iterator& operator=(const reverse_iterator<U>& other) {
+        reverse_iterator<Iterator>& operator=(const reverse_iterator<Iterator>& other) {
             _current = other.base();
             return *this;
         }
 
+        operator reverse_iterator<const Iterator>() const{ return _current; }
             /* Accesses the pointed-to element : */
 
         reference operator*() const {

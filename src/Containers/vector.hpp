@@ -97,8 +97,8 @@ namespace ft{
                 _capacity = _size = x.size();
                 _alloc = x.get_allocator();
                 _content = _alloc.allocate(_size);
-                iterator first = static_cast<iterator>(x.begin());
-                iterator end = x.end();
+                const_iterator first = x.begin();
+                const_iterator end = x.end();
                 for (size_t i = 0; first != end; first++, i++)
                     _alloc.construct(_content + i, *first);
             }
@@ -127,11 +127,11 @@ namespace ft{
 
             /* ITERATORS */
             iterator begin(){ return _content; }
-            const_iterator begin() const{ return _content; }
+            const_iterator begin() const { return _content; }
             iterator end(){ return (_content + _size); }
             const_iterator end() const { return (_content + _size); }
-            reverse_iterator rbegin(){ return (_content + _size - 1); }
-            const_reverse_iterator rbegin() const{ return (_content + _size - 1); }
+            reverse_iterator rbegin(){ return (_content + _size); }
+            const_reverse_iterator rbegin() const{ return (_content + _size); }
             reverse_iterator rend(){ return (_content + _size); }
             const_reverse_iterator rend() const{ return (_content + _size); }
 
