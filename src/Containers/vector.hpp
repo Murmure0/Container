@@ -3,8 +3,9 @@
 #include "../iterators/randomAccessIt.hpp"
 #include "../iterators/itTraits.hpp"
 #include "../iterators/reverseIt.hpp"
+#include "../utils/type_traits.hpp"
 #include <memory>
-#include <iterator>
+
 
 
 
@@ -56,14 +57,32 @@ namespace ft{
 
             /* range constructor, constructs a container with as many elements as the range [first,last), 
             with each element constructed from its corresponding element in that range, in the same order. */
-            /* enable_if : we want to write a template that only makes sense for some types, 
-            we must make it fail deduction for invalid types right in the declaration, to cause substitution failure. 
-            If the invalid type sneaks past the overload candidate selection phase, the program won't compile. */
 
+            /* 
+                SFINAE & enable_if : 
+                " We want to write a template that only makes sense for some types, 
+                we must make it fail deduction for invalid types right in the declaration, to cause substitution failure. 
+                If the invalid type sneaks past the overload candidate selection phase, the program won't compile. "
+            
+                Integral type as parameter : 
+                we don't want the compilation to fail because of the template for the Iterator, 
+                so we use enable_if :
+                    The template will be used only if ::type existe in the integral_constant struct, 
+                    ::type is typedef only if the param given is an iterator
+
+                    enable_if<true> -> possede un typedef type
+                
+                    enable_if<false>::type n'existe pas 
+
+                    enable_if<ft::is_integral<InputIterator>::value>::type is true(integral) or false(iterator)
+                        it would compile with this template if an integral was given
+                    enable_if<!ft::is_integral<InputIterator>::value>::type allow to compile want the param is NOT a integral, 
+                    so this template is checked and used only if an iterator is in param 
+            */
 
             template <class InputIterator> 
             vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), 
-            typename std::enable_if<!std::is_integral<InputIterator>::value>::type * = NULL){
+            typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = NULL){
                 _alloc = alloc;
                 _size = _capacity = std::distance(first, last);
                 _content = _alloc.allocate(_size);
@@ -71,39 +90,32 @@ namespace ft{
                 {
                     _alloc.construct(_content + i, *first);
                 }
-            }	
-            // template <class InputIterator> 
-            // vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()){
-            //     _alloc = alloc;
-            //     _size = _capacity = std::distance(first, last);
-            //     _content = _alloc.allocate(_size);
-            //     for(size_t i = 0; first != last; first++, i++)
-            //     {
-            //         _alloc.construct(_content + i, *first);
-            //     }
-            // }	
+            }
 
             /* copy constructor, constructs a container with a copy of each of the elements in x, in the same order. */
             vector (const vector& x){
                 _capacity = _size = x.size();
                 _alloc = x.get_allocator();
                 _content = _alloc.allocate(_size);
-                iterator first = x.begin();
+                iterator first = static_cast<iterator>(x.begin());
                 iterator end = x.end();
-                for (size_t i = 0; first != end; first, i++)
+                for (size_t i = 0; first != end; first++, i++)
                     _alloc.construct(_content + i, *first);
             }
 
-            /* destroys all container elements, and deallocates all the storage capacity allocated by the vector using its allocator. */
+            /* destroys all container elements, and deallocates all the storage capacity allocated 
+                by the vector using its allocator. */
             ~vector(){
+                for (size_type i = 0; i < _size; i++)
+                    _alloc.destroy(_content + i);
                 _alloc.deallocate(_content, _capacity);
-                _alloc.destroy(_content);
             }
             
             /* Copies all the elements from x into the container. */
             vector& operator= (const vector& x){
+                for (size_type i = 0; i < _size; i++)
+                    _alloc.destroy(_content + i);
                 _alloc.deallocate(_content, _capacity);
-                _alloc.destroy(_content);
 
                 _capacity = _size = x.size();
                 _content = _alloc.allocate(_size);
@@ -114,18 +126,54 @@ namespace ft{
             }
 
             /* ITERATORS */
-            iterator begin();
-            const_iterator begin() const;
-            iterator end();
-            const_iterator end() const;
-            reverse_iterator rbegin();
-            const_reverse_iterator rbegin() const;
-            reverse_iterator rend();
-            const_reverse_iterator rend() const;
+            iterator begin(){ return _content; }
+            const_iterator begin() const{ return _content; }
+            iterator end(){ return (_content + _size); }
+            const_iterator end() const { return (_content + _size); }
+            reverse_iterator rbegin(){ return (_content + _size - 1); }
+            const_reverse_iterator rbegin() const{ return (_content + _size - 1); }
+            reverse_iterator rend(){ return (_content + _size); }
+            const_reverse_iterator rend() const{ return (_content + _size); }
 
             /* CAPACITY */
-            size_type size() const;
-            size_type max_size() const;
+            size_type size() const{
+                // const_iterator it = begin();
+                // const_iterator ite = end();
+                // size_type i = 0;
+                // for (; it != ite; it++, i++)
+                //     ;
+                // return i;
+
+                /* or */
+                return _size; 
+            }
+
+            /* Returns the maximum number of elements, each of member type value_type (an alias of allocator's template parameter)
+                that could potentially be allocated by a call to member allocate.
+                A call to member allocate with the value returned by this function can still fail to allocate the requested storage. */    
+            size_type max_size() const{
+                return _alloc.max_size();
+            }
+
+            // void resize (size_type n, value_type val = value_type()){
+            //     if (n < _size)
+            //     {
+                    
+            //         _alloc.destroy(_content + n);
+            //         _alloc.deallocate(_content + n, capacity);
+            //         _size = _capacity = n;
+            //     }
+            //     else if (n > _size)
+            //     {
+            //         if (n > _capacity)
+            //         {
+            //            pointer tmp = _alloc.allocate(n);
+            //            iterator it = begin();
+            //            iterator ite = end();
+
+            //         }
+            //     }
+            // }
             void resize (size_type n, value_type val = value_type());
             size_type capacity() const;
             bool empty() const;
@@ -155,7 +203,7 @@ namespace ft{
             void clear();
 
             /* ALLOCATOR */
-            allocator_type get_allocator() const;
+            allocator_type get_allocator() const{ return _alloc;}
     };
 
     /* RELATIONAL OPERATORS */

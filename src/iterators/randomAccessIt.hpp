@@ -26,14 +26,11 @@ namespace ft{
         ~random_access_iterator(){ return; }
 
         random_access_iterator& operator=(const random_access_iterator& t){
-            if (t._current == this->_current)
-                return (*this);
-            else
-            {
-                _current = t._current;
-                return (*this);
-            }
+            _current = t._current;
+            return (*this);
         }
+
+        operator random_access_iterator<const T>() const{ return _current; }
 
         pointer base() const { return _current; }
 
