@@ -22,11 +22,11 @@ namespace ft{
         
         /*CONSTRUCTORS & DESTRUCTOR */
         reverse_iterator(): _current(){ return; }
-        explicit reverse_iterator(iterator_type it) : _current(it._current){ return; }
+        explicit reverse_iterator(iterator_type it) : _current(it.base()){ return; }
         template <class U>  reverse_iterator (const reverse_iterator<U>& other) : _current(other.base()) { return; }
         ~reverse_iterator(){ return; }
 
-        pointer base(){ 
+        iterator_type base() const{ 
             return _current; 
         }
         
