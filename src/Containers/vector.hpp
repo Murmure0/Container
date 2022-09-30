@@ -159,7 +159,6 @@ namespace ft{
                         for (; n <_size ; n++){
                             if (val)
                                 push_back(val);
-                            else
                                 _content + n = vector();
                         }
                     }
@@ -207,8 +206,11 @@ namespace ft{
             const_reference back() const{ return *(--end()); }
 
             /* MODIFIERS */
+            /* Assigns new contents to the vector, replacing its current contents, 
+            and modifying its size accordingly. */
             template <class InputIterator>  
-            void assign (InputIterator first, InputIterator last){
+            void assign (InputIterator first, InputIterator last,
+                typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = NULL){
                 size_t n = ft::distance(first, last);
                 for (size_type i = 0; i < _size; i++)
                     _alloc.destroy(_content + i);
@@ -216,16 +218,57 @@ namespace ft{
                     _alloc.deallocate(_content, _capacity);
                     _content = _alloc.allocate(n);
                 }
-                for (int i = 0; first != last; i++, first++){
+                for (size_type i = 0; first != last; i++, first++){
                     _alloc.construct(_content + i, *first);
                 }
                 _size = n;
             }
 
-            //void assign (size_type n, const value_type& val);
-            void push_back (const value_type& val);
-            void pop_back();
-            iterator insert (iterator position, const value_type& val);
+            void assign (size_type n, const value_type& val){
+                for(size_type i = 0; i < n; i++)
+                    _alloc.destroy(_content + i);
+                if (n > _capacity){
+                    _alloc.deallocate(_content, _capacity);
+                    _content = _alloc.allocate(n);
+                }
+                for(size_type i = 0; i < n; i++)
+                    _alloc.construct(_content + i, val);
+                _size = n;
+            }
+
+            /* Adds a new element at the end of the vector, after its current last element, may realloc */
+            void push_back (const value_type& val){
+                if ( _size + 1 > _capacity)
+                    reserve(_size + 1);
+                _alloc.construct(_content + _size, val);
+                _size++;
+            }
+
+            void pop_back(){
+                _size--;
+                _alloc.destroy(_content + _size);
+            }
+
+            // Here : 
+            // iterator insert (iterator position, const value_type& val){
+            //     if ( _size + 1 > _capacity)
+            //         reserve(_size + 1);
+            //     _size++;
+            //     iterator it = position++;
+            //     iterator ite = end();
+
+            //     // reverse_iterator rit = rend();
+            //     // // reverse_iterator rite = _content + position.base();
+            //     // reverse_iterator rite = <static_cast reverse_iterator>position;
+            //     // for (size_t n = _size;rit != rite; rit++, n--)
+            //     // {
+            //     //     if (*rit)
+            //     //         _alloc.destroy(*rit);
+            //     //     _alloc.construct(_content + n, *(rit + 1));
+            //     // }
+            //     _alloc.construct(_content + position.base(), val);
+            // }
+
             void insert (iterator position, size_type n, const value_type& val);
             template <class InputIterator>    void insert (iterator position, InputIterator first, InputIterator last);
             iterator erase (iterator position);

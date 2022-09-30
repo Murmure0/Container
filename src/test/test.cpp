@@ -5,7 +5,7 @@
 
 int main()
 {
-    // std::vector<std::string> theirVector(5, std::string("lol"));
+     //std::vector<std::string> theirVector(5, std::string("lol"));
     // ft::vector<std::string> myVector(3, std::string("lol"));
 
     std::vector<int> theirVector(5, 25);
@@ -117,12 +117,16 @@ int main()
     ft::vector<int>::iterator Site = secondVector.end();
     for (; Sit != Site; Sit++)
         std::cout << *Sit << std::endl;
+    std::cout << std::endl;
+
     std::cout << "content foo : " << std::endl;
     std::cout << " foo capacity : " << foo.capacity() << std::endl;
     it = foo.begin();
     ite = foo.end();
     for (; it != ite; it++)
         std::cout << *it << std::endl;
+    std::cout << std::endl;
+
     std::cout << "Assign, range version : foo.asign(first, last)" << std::endl;
     Sit = secondVector.begin();
     foo.assign(Sit, Site);
@@ -131,6 +135,7 @@ int main()
     for (; mop != mope; mop++)
         std::cout << *mop << std::endl;
     std::cout << std::endl;
+   
     std::cout << "The myVector can't contain the content of secondVector: " << std::endl;
     std::cout << " myVector capacity : " << myVector.capacity() << std::endl;
     std::cout << "content myVector : " << std::endl;
@@ -138,12 +143,49 @@ int main()
     ite = myVector.end();
     for (; it != ite; it++)
         std::cout << *it << std::endl;
+    std::cout << std::endl;
+   
     std::cout << "Assign, range version : myVector.asign(first, last)" << std::endl;
     Sit = secondVector.begin();
+    Site = secondVector.end();
     myVector.assign(Sit, Site);
-    mop = myVector.begin();
-    mope = myVector.end();
-    for (; mop != mope; mop++)
-        std::cout << *mop << std::endl;
+    it = myVector.begin();
+    ite = myVector.end();
+    for (; it != ite; it++)
+        std::cout << *it << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "Assign, fill version : myVector.assign(3,5)" << std::endl;
+    myVector.assign(3,5);
+    it = myVector.begin();
+    ite = myVector.end();
+    for (; it != ite; it++)
+        std::cout << *it << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "Push_back test :  myVector.push_back(7) " << std::endl;
+    myVector.push_back(7);
+    it = myVector.begin();
+    ite = myVector.end();
+    for (; it != ite; it++)
+        std::cout << *it << std::endl;
+    std::cout << std::endl;
+    
+    std::cout << "Pop_back test :  myVector.pop_back() " << std::endl;
+    myVector.pop_back();
+    it = myVector.begin();
+    ite = myVector.end();
+    for (; it != ite; it++)
+        std::cout << *it << std::endl;
+    std::cout << std::endl;
+    
+    // std::cout << "Insert test :  myVector.insert(ito, 2) " << std::endl;
+    // ft::vector<int>::iterator ito = myVector.begin();
+    // myVector.insert(ito, 1);
+    // it = myVector.begin();
+    // ite = myVector.end();
+    // for (; it != ite; it++)
+    //     std::cout << *it << std::endl;
+    // std::cout << std::endl;
 
 }
