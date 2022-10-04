@@ -300,7 +300,7 @@ namespace ft{
                     _size = n;
                 }
  
-                size_t reverseN = x + n ;
+                size_t reverseN = x + n +1 ;
                 // size_t contentToCopy = reverseN +n ; //méh
                 // std::cout << "x ;" << x << std::endl;
                 // std::cout << "n ;" << n << std::endl;
@@ -308,7 +308,7 @@ namespace ft{
                 
                 // std::cout << "reverseN ;" << reverseN << std::endl;
                 // std::cout << "contenttocopy ;" << contentToCopy << std::endl;
-                for(size_t m = 0; m < reverseN; m++, y--)
+                for(size_t m = 0; m <= reverseN; m++, y--)
                 {
                     size_t endPos = _size - m;
                     _alloc.destroy(_content + endPos);
