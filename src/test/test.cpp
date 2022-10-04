@@ -179,13 +179,49 @@ int main()
         std::cout << *it << std::endl;
     std::cout << std::endl;
     
-    // std::cout << "Insert test :  myVector.insert(ito, 2) " << std::endl;
-    // ft::vector<int>::iterator ito = myVector.begin();
-    // myVector.insert(ito, 1);
-    // it = myVector.begin();
-    // ite = myVector.end();
-    // for (; it != ite; it++)
-    //     std::cout << *it << std::endl;
-    // std::cout << std::endl;
+    std::cout << "Insert test : ito= myVector.begin() + 2 // myVector.insert(ito, 1989) " << std::endl;
+    ft::vector<int> pbVector;
+    pbVector.push_back(5);
+    pbVector.push_back(4);
+    pbVector.push_back(3);
+    pbVector.push_back(2);
+    pbVector.push_back(1);
+    ft::vector<int>::iterator ito = (pbVector.begin()) + 2;
+    ft::vector<int>::iterator ret = pbVector.insert(ito, 1989);
+    std::cout << "Content of ret : " << *ret << std::endl;
+    
+    it = pbVector.begin();
+    ite = pbVector.end();
+    for (; it != ite; it++)
+        std::cout << *it << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "Multi-Insert test " << std::endl;
+    ft::vector<int> miVector;
+    miVector.push_back(9);
+    miVector.push_back(8);
+    miVector.push_back(7);
+    miVector.push_back(6);
+    miVector.push_back(5);
+    miVector.push_back(4);
+    miVector.push_back(3);
+    miVector.push_back(2);
+    miVector.push_back(1);
+    miVector.push_back(13);
+
+    it = miVector.begin();
+    ite = miVector.end();
+    for (; it != ite; it++)
+        std::cout << *it << std::endl;
+
+    std::cout << std::endl;
+    ito = (miVector.begin()) + 4;
+    miVector.insert(ito, 21, 1989);
+    
+    it = miVector.begin();
+    ite = miVector.end();
+    for (; it != ite; it++)
+        std::cout << *it << std::endl;
+    std::cout << std::endl;
 
 }

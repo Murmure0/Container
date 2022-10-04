@@ -7,6 +7,7 @@
 #include "../utils/utils.hpp"
 #include <memory>
 #include <iostream>
+#include <vector>
 
 
 
@@ -135,6 +136,7 @@ namespace ft{
             reverse_iterator rend(){ return reverse_iterator(begin()); }
             const_reverse_iterator rend() const{ return const_reverse_iterator(begin()); }
 
+
             /* CAPACITY */
             size_type size() const{ return _size; }
 
@@ -250,27 +252,83 @@ namespace ft{
             }
 
             // Here : 
-            // iterator insert (iterator position, const value_type& val){
-            //     if ( _size + 1 > _capacity)
-            //         reserve(_size + 1);
-            //     _size++;
-            //     iterator it = position++;
-            //     iterator ite = end();
+            iterator insert (iterator position, const value_type& val){
+                
+                size_t n = ft::distance(begin(), position);
 
-            //     // reverse_iterator rit = rend();
-            //     // // reverse_iterator rite = _content + position.base();
-            //     // reverse_iterator rite = <static_cast reverse_iterator>position;
-            //     // for (size_t n = _size;rit != rite; rit++, n--)
-            //     // {
-            //     //     if (*rit)
-            //     //         _alloc.destroy(*rit);
-            //     //     _alloc.construct(_content + n, *(rit + 1));
-            //     // }
-            //     _alloc.construct(_content + position.base(), val);
+                if ( _size + 1 > _capacity)
+                {
+                    reserve(_size + 1);
+                    _size++;
+                }
+                else if (_size == 0)
+                {
+                    _alloc.allocate(1);
+                    _alloc.construct(_content, val);
+                    _size++;
+                    return _content;
+                }
+
+                size_t reverseN = (_size - n);
+                for(size_t m = 0; m < reverseN; m++)
+                {
+                    size_t pos = _size - m;
+                    _alloc.destroy(_content + pos);
+                    _alloc.construct(_content + pos, *(_content + pos - 1));
+                }
+                _alloc.destroy(_content + n);
+                _alloc.construct(_content + n, val);
+                return (_content + n);
+            }
+
+            void insert (iterator position, size_type n, const value_type& val){
+                
+                size_t x = ft::distance(begin(), position);
+                size_t y = _size;
+
+                if ( _size + n > _capacity )
+                {
+                    reserve(_size + n);
+                    _size += n;
+                }
+                else if (_size == 0)
+                {
+                    _alloc.allocate(n);
+                    for(;n > 0; n--){
+                        _alloc.construct(_content +n, val);
+                    }
+                    _size = n;
+                }
+ 
+                size_t reverseN = x + n ;
+                // size_t contentToCopy = reverseN +n ; //méh
+                // std::cout << "x ;" << x << std::endl;
+                // std::cout << "n ;" << n << std::endl;
+                // std::cout << "content (x+n-1) ;" << *(_content +n + x -1) << std::endl;
+                
+                // std::cout << "reverseN ;" << reverseN << std::endl;
+                // std::cout << "contenttocopy ;" << contentToCopy << std::endl;
+                for(size_t m = 0; m < reverseN; m++, y--)
+                {
+                    size_t endPos = _size - m;
+                    _alloc.destroy(_content + endPos);
+                    _alloc.construct(_content + endPos, *(_content + y));
+                }
+
+                for(size_t i = x; i < (x + n); i++){
+                    _alloc.destroy(_content + i);
+                    _alloc.construct(_content + i, val);
+                }
+            }
+
+
+            // template <class InputIterator>    
+            // void insert (iterator position, InputIterator first, InputIterator last, 
+            // typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = NULL){
+                
             // }
 
-            void insert (iterator position, size_type n, const value_type& val);
-            template <class InputIterator>    void insert (iterator position, InputIterator first, InputIterator last);
+
             iterator erase (iterator position);
             iterator erase (iterator first, iterator last);
             void swap (vector& x);

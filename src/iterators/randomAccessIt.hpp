@@ -48,7 +48,7 @@ namespace ft{
 
         random_access_iterator  operator++(int){
             random_access_iterator tmp(*this);
-            _current++;
+            ++(*this);
             return tmp;
         }
 
@@ -90,7 +90,7 @@ namespace ft{
     template <typename Iterator1, typename Iterator2>
     bool    operator!=(const ft::random_access_iterator<Iterator1>& x, const ft::random_access_iterator<Iterator2>& y)
     {
-         return (!(x.base() == y.base()));
+         return ((x.base() != y.base()));
     }
 
     template <typename Iterator1, typename Iterator2>
