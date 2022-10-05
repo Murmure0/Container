@@ -323,28 +323,17 @@ namespace ft{
                 size_t range = ft::distance(first,last) ;
                 size_t y = _size;
 
-                std::cout << "x : " << x <<std::endl;
-                std::cout << "y : " << y <<std::endl;
-                std::cout << "range : " << range <<std::endl;
-
                 if ( _size + range > _capacity)
                 {
                     reserve(_size + range);
                     _size += range; 
                 }
-                else if (_size == 0)
-                {
-                    _alloc.allocate(range);
-                    for(;range > 0; range--, --last){
-                        _alloc.construct(_content + range, *last);
-                    }
-                    _size = range;
-                }
 
-                std::cout << "newsize : " << _size << std::endl;
-                for(size_t n = 1; n <= (range + 1); n++){
-                    _alloc.destroy(_content + (_size - n));
-                    _alloc.construct(_content + (_size - n), *(_content + (y - n)));
+                if (x < y){
+                    for(size_t n = 1; n <= (range + 1); n++){
+                        _alloc.destroy(_content + (_size - n));
+                        _alloc.construct(_content + (_size - n), *(_content + (y - n)));
+                    }
                 }
 
                 for(size_t i = x; i < (x + range ); i++, first++){

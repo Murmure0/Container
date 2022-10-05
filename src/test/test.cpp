@@ -226,6 +226,7 @@ int main()
         std::cout << "Multi-Insert test with iterator " << std::endl;
         ft::vector<int> potiVector;
 
+        potiVector.push_back(4);
         potiVector.push_back(3);
         potiVector.push_back(2);
         potiVector.push_back(1);
@@ -239,7 +240,7 @@ int main()
 
         ft::vector<int>::iterator pit = potiVector.begin();
         ft::vector<int>::iterator pite = potiVector.end();
-        ft::vector<int>::iterator git = groVector.begin()+1;
+        ft::vector<int>::iterator git = groVector.end();
         groVector.insert(git, pit, pite);
 
         ft::vector<int>::iterator it = groVector.begin();
