@@ -291,17 +291,9 @@ namespace ft{
                     reserve(_size + n);
                     _size += n;
                 }
-                else if (_size == 0)
-                {
-                    _alloc.allocate(n);
-                    for(;n > 0; n--){
-                        _alloc.construct(_content +n, val);
-                    }
-                    _size = n;
-                }
- 
-                size_t reverseN = x + n + 1;
-                for(size_t m = 0; m <= reverseN; m++, y--)
+
+                size_t diff = y - x;
+                for(size_t m = 0; m <= diff; m++, y--)
                 {
                     size_t endPos = _size - m;
                     _alloc.destroy(_content + endPos);
@@ -320,8 +312,8 @@ namespace ft{
             typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = NULL){
                 
                 size_t x = ft::distance(begin(), position);
-                size_t range = ft::distance(first,last) ;
                 size_t y = _size;
+                size_t range = ft::distance(first,last) ;
 
                 if ( _size + range > _capacity)
                 {
@@ -329,14 +321,15 @@ namespace ft{
                     _size += range; 
                 }
 
-                if (x < y){
-                    for(size_t n = 1; n <= (range + 1); n++){
-                        _alloc.destroy(_content + (_size - n));
-                        _alloc.construct(_content + (_size - n), *(_content + (y - n)));
-                    }
+                size_t diff = y - x;
+                for(size_t i = 0; i <= diff; i++, y--)
+                {
+                    size_t endPos = _size - i;
+                    _alloc.destroy(_content + endPos);
+                    _alloc.construct(_content + endPos, *(_content + y));
                 }
 
-                for(size_t i = x; i < (x + range ); i++, first++){
+                for(size_t i = x; i < (x + range); i++, first++){
                     _alloc.destroy(_content + i);
                     _alloc.construct(_content + i, *first);
                 }
