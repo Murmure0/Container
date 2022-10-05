@@ -181,11 +181,11 @@ int main()
     
     std::cout << "Insert test : ito= myVector.begin() + 2 // myVector.insert(ito, 1989) " << std::endl;
     ft::vector<int> pbVector;
-    pbVector.push_back(5);
-    pbVector.push_back(4);
-    pbVector.push_back(3);
-    pbVector.push_back(2);
-    pbVector.push_back(1);
+    pbVector.push_back(20);
+    pbVector.push_back(19);
+    pbVector.push_back(18);
+    pbVector.push_back(17);
+    pbVector.push_back(16);
     ft::vector<int>::iterator ito = (pbVector.begin()) + 2;
     ft::vector<int>::iterator ret = pbVector.insert(ito, 1989);
     std::cout << "Content of ret : " << *ret << std::endl;
@@ -196,32 +196,59 @@ int main()
         std::cout << *it << std::endl;
     std::cout << std::endl;
 
-    std::cout << "Multi-Insert test " << std::endl;
-    ft::vector<int> miVector;
-    miVector.push_back(9);
-    miVector.push_back(8);
-    miVector.push_back(7);
-    miVector.push_back(6);
-    miVector.push_back(5);
-    miVector.push_back(4);
-    miVector.push_back(3);
-    miVector.push_back(2);
-    miVector.push_back(1);
-    miVector.push_back(13);
+    {
+        std::cout << "Multi-Insert test " << std::endl;
+        ft::vector<int> miVector;
 
-    it = miVector.begin();
-    ite = miVector.end();
-    for (; it != ite; it++)
-        std::cout << *it << std::endl;
+        miVector.push_back(9);
+        miVector.push_back(8);
+        miVector.push_back(7);
+        miVector.push_back(6);
+        miVector.push_back(5);
+        miVector.push_back(4);
+        miVector.push_back(3);
+        miVector.push_back(2);
+        miVector.push_back(1);
+        miVector.push_back(13);
 
-    std::cout << std::endl;
-    ito = (miVector.begin()) + 4;
-    miVector.insert(ito, 21, 1989);
-    
-    it = miVector.begin();
-    ite = miVector.end();
-    for (; it != ite; it++)
-        std::cout << *it << std::endl;
-    std::cout << std::endl;
+        std::cout << std::endl;
+        ito = (miVector.begin()) + 4;
+        miVector.insert(ito, 2, 1989);
+        
+        it = miVector.begin();
+        ite = miVector.end();
+        for (; it != ite; it++)
+            std::cout << *it << std::endl;
+        std::cout << std::endl;
+    }
+
+    {
+        std::cout << "Multi-Insert test with iterator " << std::endl;
+        ft::vector<int> potiVector;
+
+        potiVector.push_back(3);
+        potiVector.push_back(2);
+        potiVector.push_back(1);
+
+        ft::vector<int> groVector;
+        groVector.push_back(10);
+        groVector.push_back(9);
+        groVector.push_back(8);
+        groVector.push_back(7);
+        groVector.push_back(6);
+
+        ft::vector<int>::iterator pit = potiVector.begin();
+        ft::vector<int>::iterator pite = potiVector.end();
+        ft::vector<int>::iterator git = groVector.begin()+1;
+        groVector.insert(git, pit, pite);
+
+        ft::vector<int>::iterator it = groVector.begin();
+        ft::vector<int>::iterator ite = groVector.end();
+        for (; it != ite; it++)
+            std::cout << *it << std::endl;
+        std::cout << std::endl;
+    }
+ 
+
 
 }

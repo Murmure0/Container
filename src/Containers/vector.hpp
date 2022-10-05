@@ -251,7 +251,7 @@ namespace ft{
                 _alloc.destroy(_content + _size);
             }
 
-            // Here : 
+
             iterator insert (iterator position, const value_type& val){
                 
                 size_t n = ft::distance(begin(), position);
@@ -300,14 +300,7 @@ namespace ft{
                     _size = n;
                 }
  
-                size_t reverseN = x + n +1 ;
-                // size_t contentToCopy = reverseN +n ; //méh
-                // std::cout << "x ;" << x << std::endl;
-                // std::cout << "n ;" << n << std::endl;
-                // std::cout << "content (x+n-1) ;" << *(_content +n + x -1) << std::endl;
-                
-                // std::cout << "reverseN ;" << reverseN << std::endl;
-                // std::cout << "contenttocopy ;" << contentToCopy << std::endl;
+                size_t reverseN = x + n + 1;
                 for(size_t m = 0; m <= reverseN; m++, y--)
                 {
                     size_t endPos = _size - m;
@@ -322,11 +315,43 @@ namespace ft{
             }
 
 
-            // template <class InputIterator>    
-            // void insert (iterator position, InputIterator first, InputIterator last, 
-            // typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = NULL){
+            template <class InputIterator>    
+            void insert (iterator position, InputIterator first, InputIterator last, 
+            typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = NULL){
                 
-            // }
+                size_t x = ft::distance(begin(), position);
+                size_t range = ft::distance(first,last) ;
+                size_t y = _size;
+
+                std::cout << "x : " << x <<std::endl;
+                std::cout << "y : " << y <<std::endl;
+                std::cout << "range : " << range <<std::endl;
+
+                if ( _size + range > _capacity)
+                {
+                    reserve(_size + range);
+                    _size += range; 
+                }
+                else if (_size == 0)
+                {
+                    _alloc.allocate(range);
+                    for(;range > 0; range--, --last){
+                        _alloc.construct(_content + range, *last);
+                    }
+                    _size = range;
+                }
+
+                std::cout << "newsize : " << _size << std::endl;
+                for(size_t n = 1; n <= (range + 1); n++){
+                    _alloc.destroy(_content + (_size - n));
+                    _alloc.construct(_content + (_size - n), *(_content + (y - n)));
+                }
+
+                for(size_t i = x; i < (x + range ); i++, first++){
+                    _alloc.destroy(_content + i);
+                    _alloc.construct(_content + i, *first);
+                }
+            }
 
 
             iterator erase (iterator position);
