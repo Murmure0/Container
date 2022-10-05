@@ -224,8 +224,8 @@ int main()
         std::cout << std::endl;
     }
 
+        std::cout << "Multi-Insert test with iterator + clear" << std::endl;
     {
-        std::cout << "Multi-Insert test with iterator " << std::endl;
         ft::vector<int> potiVector;
 
         potiVector.push_back(4);
@@ -252,8 +252,68 @@ int main()
         for (; it != ite; it++)
             std::cout << *it << std::endl;
         std::cout << std::endl;
+
+        groVector.clear();
+        it = groVector.begin();
+        ite = groVector.end();
+        std::cout << "content after clear : " << std::endl;
+        for (; it != ite; it++)
+            std::cout << *it << std::endl;
+        std::cout << std::endl;
+
+        groVector.push_back(100);
+        groVector.push_back(500);
+        groVector.push_back(900);
+        it = groVector.begin();
+        ite = groVector.end();
+        std::cout << "content after pushback 100/500/900 : " << std::endl;
+        for (; it != ite; it++)
+            std::cout << *it << std::endl;
+        std::cout << std::endl;
     }
  
+        std::cout << "Swap" << std::endl;
+    {
+        ft::vector<int> foo(5, 50);
+        ft::vector<int>::iterator it = foo.begin();
+        ft::vector<int>::iterator ite = foo.end();
+            std::cout << "content of foo : " << std::endl;
+        for (; it != ite; it++)
+        {
+            std::cout << *it << std::endl;
+        }
+        std::cout << std::endl;
+
+
+        ft::vector<int> bar(10, 21);
+        it = bar.begin();
+        ite = bar.end();
+            std::cout << "content of bar : " << std::endl;
+        for (; it != ite; it++)
+        {
+            std::cout << *it << std::endl;
+        }
+        std::cout << std::endl;
+
+        bar.swap(foo);
+        it = foo.begin();
+        ite = foo.end();
+        std::cout << "new content of foo : " << std::endl;
+        for (; it != ite; it++)
+        {
+            std::cout << *it << std::endl;
+        }
+        std::cout << std::endl;
+        
+        it = bar.begin();
+        ite = bar.end();
+            std::cout << "content of bar : " << std::endl;
+        for (; it != ite; it++)
+        {
+            std::cout << *it << std::endl;
+        }
+        std::cout << std::endl;
+    }
 
 
 }

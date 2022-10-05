@@ -293,9 +293,9 @@ namespace ft{
                 }
 
                 size_t diff = y - x;
-                for(size_t m = 0; m <= diff; m++, y--)
+                for(size_t i = 0; i <= diff; i++, y--)
                 {
-                    size_t endPos = _size - m;
+                    size_t endPos = _size - i;
                     _alloc.destroy(_content + endPos);
                     _alloc.construct(_content + endPos, *(_content + y));
                 }
@@ -337,9 +337,37 @@ namespace ft{
 
 
             iterator erase (iterator position);
+
             iterator erase (iterator first, iterator last);
-            void swap (vector& x);
-            void clear();
+
+            void swap (vector& x){
+                vector tmp(x);
+                pointer ptrTmp = x._content;
+                // if ()
+                std::cout << "xsize : " << x._size << " x capacity :" << x._capacity << " x *content" << *(x._content) << std::endl;
+                std::cout << "size : " << _size << " capacity : " << _capacity << " *content " << *(_content) << std::endl;
+                x._capacity = _capacity;
+                x._size = _size;
+                x._content = _content;
+                std::cout << std::endl;
+                std::cout << "xsize : " << x._size << " x capacity :" << x._capacity << " x *content" << *(x._content) << std::endl;
+
+                std::cout << std::endl;
+                std::cout << "tmpsize : " << tmp._size << " tmp capacity : " << tmp._capacity << " tmp *content " << *(tmp._content) << std::endl;
+                _capacity = tmp._capacity;
+                _size = tmp._size;
+                _content = ptrTmp;
+                std::cout << std::endl;
+                std::cout << "size : " << _size << " capacity : " << _capacity << " *content " << *(_content) << std::endl;
+                std::cout << std::endl;
+            }
+
+            void clear(){               
+                for(size_t i = 0; i < _size; i++){
+                    _alloc.destroy(_content + i);
+                }
+                _size = 0;
+            }
 
             /* ALLOCATOR */
             allocator_type get_allocator() const{ return _alloc;}
