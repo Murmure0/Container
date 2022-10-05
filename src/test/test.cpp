@@ -277,7 +277,8 @@ int main()
         ft::vector<int> foo(5, 50);
         ft::vector<int>::iterator it = foo.begin();
         ft::vector<int>::iterator ite = foo.end();
-            std::cout << "content of foo : " << std::endl;
+
+        std::cout << "content of foo : " << std::endl;
         for (; it != ite; it++)
         {
             std::cout << *it << std::endl;
@@ -288,7 +289,8 @@ int main()
         ft::vector<int> bar(10, 21);
         it = bar.begin();
         ite = bar.end();
-            std::cout << "content of bar : " << std::endl;
+
+        std::cout << "content of bar : " << std::endl;
         for (; it != ite; it++)
         {
             std::cout << *it << std::endl;
@@ -298,6 +300,7 @@ int main()
         bar.swap(foo);
         it = foo.begin();
         ite = foo.end();
+
         std::cout << "new content of foo : " << std::endl;
         for (; it != ite; it++)
         {
@@ -307,7 +310,8 @@ int main()
         
         it = bar.begin();
         ite = bar.end();
-            std::cout << "content of bar : " << std::endl;
+
+        std::cout << "content of bar : " << std::endl;
         for (; it != ite; it++)
         {
             std::cout << *it << std::endl;
@@ -315,5 +319,38 @@ int main()
         std::cout << std::endl;
     }
 
+    std::cout << "Erase, single position : " << std::endl;
+    {
+        ft::vector<int> miVector;
+        miVector.push_back(9);
+        miVector.push_back(8);
+        miVector.push_back(7);
+        miVector.push_back(6);
+        miVector.push_back(5);
+        miVector.push_back(4);
+        miVector.push_back(3);
+        miVector.push_back(2);
+        miVector.push_back(1);
+        miVector.push_back(13);
+
+        std::cout << "size of miVector : " << miVector.size() <<std::endl;
+        ft::vector<int>::iterator iterase = (miVector.end() -1);
+        std::cout << "Value to delete = " << *iterase << std::endl;
+
+        ft::vector<int>::iterator it = miVector.begin();
+        ft::vector<int>::iterator ite = miVector.end();
+        for (; it != ite; it++)
+            std::cout << *it << std::endl;
+        std::cout << std::endl;
+
+        ft::vector<int>::iterator ret = miVector.erase(iterase);
+        it = miVector.begin();
+        ite = miVector.end();
+        for (; it != ite; it++)
+            std::cout << *it << std::endl;
+        std::cout << "new size of miVector : " << miVector.size() <<std::endl;
+        std::cout << "content of ret : " << *ret <<std::endl;
+        std::cout << std::endl;
+    }
 
 }

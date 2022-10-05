@@ -336,30 +336,34 @@ namespace ft{
             }
 
 
-            iterator erase (iterator position);
+            iterator erase (iterator position){
+                size_t x = ft::distance(begin(), position);
+                size_t diff = _size - x;
+                size_t i = x;
+                for (size_t j = 0; j <= diff; i++, j++){
+                    _alloc.destroy(_content + (i));
+                    _alloc.construct(_content + (i), *(_content + i + 1));
+                }
+                if (diff != 0)
+                    _size--;
+                return (_content + x);
+            }
 
-            iterator erase (iterator first, iterator last);
+            iterator erase (iterator first, iterator last){
+                
+            }
 
             void swap (vector& x){
                 vector tmp(x);
                 pointer ptrTmp = x._content;
-                // if ()
-                std::cout << "xsize : " << x._size << " x capacity :" << x._capacity << " x *content" << *(x._content) << std::endl;
-                std::cout << "size : " << _size << " capacity : " << _capacity << " *content " << *(_content) << std::endl;
+
                 x._capacity = _capacity;
                 x._size = _size;
                 x._content = _content;
-                std::cout << std::endl;
-                std::cout << "xsize : " << x._size << " x capacity :" << x._capacity << " x *content" << *(x._content) << std::endl;
 
-                std::cout << std::endl;
-                std::cout << "tmpsize : " << tmp._size << " tmp capacity : " << tmp._capacity << " tmp *content " << *(tmp._content) << std::endl;
                 _capacity = tmp._capacity;
                 _size = tmp._size;
                 _content = ptrTmp;
-                std::cout << std::endl;
-                std::cout << "size : " << _size << " capacity : " << _capacity << " *content " << *(_content) << std::endl;
-                std::cout << std::endl;
             }
 
             void clear(){               
