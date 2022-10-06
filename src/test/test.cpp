@@ -353,4 +353,48 @@ int main()
         std::cout << std::endl;
     }
 
+        std::cout << "Erase, range : " << std::endl;
+    {
+        ft::vector<int> miVector;
+        miVector.push_back(9);
+        miVector.push_back(8);
+        miVector.push_back(7);
+        miVector.push_back(6);
+        miVector.push_back(5);
+        miVector.push_back(4);
+        miVector.push_back(3);
+        miVector.push_back(2);
+        miVector.push_back(1);
+        miVector.push_back(13);
+
+        std::cout << "Size of miVector : " << miVector.size() <<std::endl;
+        ft::vector<int>::iterator its = miVector.begin() + 5;
+        ft::vector<int>::iterator itse = miVector.end();
+        std::cout << "Range to delete : " << std::endl;
+        for (;its != itse; its++){
+            std::cout << *its << std::endl;
+        }
+        its = miVector.begin() +5;
+
+        std::cout << "Content of my vector, before erase :" << std::endl;
+        ft::vector<int>::iterator it = miVector.begin();
+        ft::vector<int>::iterator ite = miVector.end();
+        for (; it != ite; it++)
+            std::cout << *it << std::endl;
+        std::cout << std::endl;
+
+        miVector.erase(its,itse);
+        // ft::vector<int>::iterator ret = miVector.erase(iterase);
+        std::cout << "Content of my vector, after erase :" << std::endl;
+        it = miVector.begin();
+        ite = miVector.end();
+        for (; it != ite; it++)
+            std::cout << *it << std::endl;
+        std::cout << "new size of miVector : " << miVector.size() <<std::endl;
+        // std::cout << "content of ret : " << *ret <<std::endl;
+        std::cout << std::endl;
+    }
+
 }
+
+

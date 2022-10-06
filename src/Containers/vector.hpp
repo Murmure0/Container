@@ -350,7 +350,26 @@ namespace ft{
             }
 
             iterator erase (iterator first, iterator last){
-                
+                size_t x = ft::distance(first, last);
+                size_t y = ft::distance(begin(), last);
+                size_t z = ft::distance(begin(), first);
+
+                if (x > ft::distance(begin(), end())){
+                    for(; first != last; first++, x--)
+                    {
+                        _alloc.destroy(_content + x);
+                        _size--;
+                    }
+                    return (end());
+                }
+
+                for(size_t i = z; i < x; i++, y++)
+                {
+                    _alloc.destroy(_content + i);
+                    _alloc.construct(_content + i, *(_content + y));
+                }
+                _size -= x;
+                return (_content + _size);
             }
 
             void swap (vector& x){
