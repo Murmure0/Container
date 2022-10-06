@@ -3,6 +3,7 @@
 #include "../iterators/randomAccessIt.hpp"
 #include "../iterators/itTraits.hpp"
 #include "../iterators/reverseIt.hpp"
+#include "../utils/lexicographical_compare.hpp"
 #include "../utils/type_traits.hpp"
 #include "../utils/utils.hpp"
 #include <memory>
@@ -146,7 +147,7 @@ namespace ft{
             size_type max_size() const{ return _alloc.max_size(); }
 
             /* A TEST UNE FOIS PUSHBACK FAIT */
-            void resize (size_type n, value_type val = value_type()){
+            void resize(size_type n, value_type val = value_type()){
                 if (n < _size)
                 {
                     for (size_type i = n; i < _size; i++)
@@ -155,14 +156,12 @@ namespace ft{
                 }
                 else if (n > _size)
                 {
-                    if (n > _capacity)
+                    if (n > _capacity){
                         reserve(n);
-                    else {
-                        for (; n <_size ; n++){
-                            if (val)
-                                push_back(val);
-                                _content + n = vector();
-                        }
+                    }
+                    for (; n >_size ; n--){
+                        if (val)
+                            push_back(val);
                     }
                 }
             }
@@ -172,7 +171,7 @@ namespace ft{
             bool empty() const { return _size; }
 
             /* Requests that the vector capacity be at least enough to contain n elements. */
-            void reserve (size_type n){
+            void reserve(size_type n){
                 if (n > _capacity)
                 {
                     pointer newVector = _alloc.allocate(n);
@@ -214,11 +213,13 @@ namespace ft{
             void assign (InputIterator first, InputIterator last,
                 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = NULL){
                 size_t n = ft::distance(first, last);
+
                 for (size_type i = 0; i < _size; i++)
                     _alloc.destroy(_content + i);
                 if (n > _capacity){
                     _alloc.deallocate(_content, _capacity);
                     _content = _alloc.allocate(n);
+                    _capacity = n;
                 }
                 for (size_type i = 0; first != last; i++, first++){
                     _alloc.construct(_content + i, *first);
@@ -232,6 +233,7 @@ namespace ft{
                 if (n > _capacity){
                     _alloc.deallocate(_content, _capacity);
                     _content = _alloc.allocate(n);
+                    _capacity = n;
                 }
                 for(size_type i = 0; i < n; i++)
                     _alloc.construct(_content + i, val);
@@ -340,7 +342,8 @@ namespace ft{
                 size_t x = ft::distance(begin(), position);
                 size_t diff = _size - x;
                 size_t i = x;
-                for (size_t j = 0; j <= diff; i++, j++){
+                
+                for (size_t j = 0; j < diff; i++, j++){
                     _alloc.destroy(_content + (i));
                     _alloc.construct(_content + (i), *(_content + i + 1));
                 }
@@ -350,9 +353,10 @@ namespace ft{
             }
 
             iterator erase (iterator first, iterator last){
-                size_t x = ft::distance(first, last);
+                size_t x = ft::distance(first, last) ;
                 size_t y = ft::distance(begin(), last);
                 size_t z = ft::distance(begin(), first);
+                size_t ret = ft::distance(begin(), first);
 
                 if (x > ft::distance(begin(), end())){
                     for(; first != last; first++, x--)
@@ -362,14 +366,14 @@ namespace ft{
                     }
                     return (end());
                 }
-
-                for(size_t i = z; i < x; i++, y++)
+     
+                for(size_t i = 0; i < x; i++, y++, z++)
                 {
-                    _alloc.destroy(_content + i);
-                    _alloc.construct(_content + i, *(_content + y));
+                        _alloc.destroy(_content + z);
+                        _alloc.construct(_content + z, *(_content + y));
                 }
                 _size -= x;
-                return (_content + _size);
+                return (_content + ret);
             }
 
             void swap (vector& x){
@@ -397,14 +401,33 @@ namespace ft{
     };
 
     /* RELATIONAL OPERATORS */
-    template <class T, class Alloc>  bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-    template <class T, class Alloc>  bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-    template <class T, class Alloc>  bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-    template <class T, class Alloc>  bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-    template <class T, class Alloc>  bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-    template <class T, class Alloc>  bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+    template <class T, class Alloc>  bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        return ( lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin()));
+    }
 
-    /* SWAP */
-    template <class T, class Alloc>  void swap (vector<T,Alloc>& x, vector<T,Alloc>& y);
+    template <class T, class Alloc>  bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        return (!(lhs == rhs));
+    }
+
+    template <class T, class Alloc>  bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+    }
+
+    template <class T, class Alloc>  bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        return (!(rhs < lhs));
+    }
+
+    template <class T, class Alloc>  bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        return ((lhs < rhs));
+    }
+
+    template <class T, class Alloc>  bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
+        return(!(lhs < rhs));
+    }
+
+    /* SWAP FUNCTION*/
+    template <class T, class Alloc>  void swap (vector<T,Alloc>& x, vector<T,Alloc>& y){
+        x.swap(y);
+    }
 
 }
