@@ -367,11 +367,12 @@ namespace ft{
                     return (end());
                 }
      
-                for(size_t i = 0; i < x; i++, y++, z++)
+                for(size_t i = 0; i <= x; i++, y++, z++)
                 {
-                        _alloc.destroy(_content + z);
-                        _alloc.construct(_content + z, *(_content + y));
+                    _alloc.destroy(_content + z);
+                    _alloc.construct(_content + z, *(_content + y));
                 }
+                
                 _size -= x;
                 return (_content + ret);
             }
