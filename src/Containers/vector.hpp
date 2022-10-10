@@ -3,7 +3,7 @@
 #include "../iterators/randomAccessIt.hpp"
 #include "../iterators/itTraits.hpp"
 #include "../iterators/reverseIt.hpp"
-#include "../utils/lexicographical_compare.hpp"
+#include "../utils/lex.hpp"
 #include "../utils/type_traits.hpp"
 #include "../utils/utils.hpp"
 #include <memory>
@@ -115,16 +115,19 @@ namespace ft{
             
             /* Copies all the elements from x into the container. */
             vector& operator= (const vector& x){
-                for (size_type i = 0; i < _size; i++)
+                for (size_type i = 0; i < _size; i++){
                     _alloc.destroy(_content + i);
+                }
                 _alloc.deallocate(_content, _capacity);
 
                 _capacity = _size = x.size();
                 _content = _alloc.allocate(_size);
-                iterator first = x.begin();
-                iterator end = x.end();
-                for (size_t i = 0; first != end; first, i++)
+                const_iterator first = x.begin();
+                const_iterator end = x.end();
+                for (size_t i = 0; i < _size; first++, i++){
                     _alloc.construct(_content + i, *first);
+                }
+                return *this;
             }
 
             /* ITERATORS */
@@ -150,8 +153,9 @@ namespace ft{
             void resize(size_type n, value_type val = value_type()){
                 if (n < _size)
                 {
-                    for (size_type i = n; i < _size; i++)
+                    for (size_type i = n; i < _size; i++){
                         _alloc.destroy(_content + i);
+                    }
                     _size = n;
                 }
                 else if (n > _size)
@@ -159,16 +163,18 @@ namespace ft{
                     if (n > _capacity){
                         reserve(n);
                     }
-                    for (; n >_size ; n--){
-                        if (val)
-                            push_back(val);
+                    size_t previous_size = _size; 
+                    _size = n;
+                    for(size_t  i = previous_size; i < n; i++){
+                        _alloc.construct(_content + i, val);
                     }
+                    
                 }
             }
 
 
             size_type capacity() const{ return _capacity; };
-            bool empty() const { return _size; }
+            bool empty() const { return _size == 0; }
 
             /* Requests that the vector capacity be at least enough to contain n elements. */
             void reserve(size_type n){
@@ -193,13 +199,13 @@ namespace ft{
             reference at (size_type n){ 
                 if (n >= _size)
                     throw std::out_of_range("ft::vector");
-                else
-                    return *(_content + n);}
+                return *(_content + n);}
+
             const_reference at (size_type n) const{ 
                 if (n >= _size)
                     throw std::out_of_range("ft::vector");
-                else
-                    return &(_content + n);}
+                // return &(_content + n);}
+                return *(_content + n);}
 
             reference front(){ return *_content; }
             const_reference front() const{ return (*_content); }
@@ -372,7 +378,7 @@ namespace ft{
                     _alloc.destroy(_content + z);
                     _alloc.construct(_content + z, *(_content + y));
                 }
-                
+
                 _size -= x;
                 return (_content + ret);
             }
@@ -419,7 +425,7 @@ namespace ft{
     }
 
     template <class T, class Alloc>  bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
-        return ((lhs < rhs));
+        return (!(lhs <= rhs));
     }
 
     template <class T, class Alloc>  bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
