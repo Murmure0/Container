@@ -23,7 +23,7 @@ namespace ft{
             if (!(*first1 == *first2))
                 return false;
             ++first1; ++first2;
-            }
+        }
         return true;
     }
 }
