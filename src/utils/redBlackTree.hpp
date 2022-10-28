@@ -58,7 +58,14 @@ namespace ft{
 
         public:
             ~rdb() {
-                //should clean the content of the tree
+                //should clean the content of the tree, yep it should
+                //but it didn't for now
+                //bc i'm enjoying creating this beautiful tree.
+                //Feeling inspired, may clean later.
+                /*The constructor create an empty tree by initializing root to NULL value. 
+                Function Destroy() is implemented recursively whereby the function will destroy all nodes 
+                in the left subtree first, followed by destroying nodes in the right subtree. 
+                Lastly, the root node will be destroyed.*/
             }
 
             rdb() {
@@ -72,6 +79,10 @@ namespace ft{
                 std::cout << "Content root first : " << root->pair.first  << " second : " << root->pair.second << " color : " << root->col << std::endl;
             }
 
+            node* getRoot(){
+                return root;
+            }
+
             void setNodeNull(node *n, node *parent){
                 n->col = 0;
                 n->leftC = NULL;
@@ -79,6 +90,15 @@ namespace ft{
                 n->parent = parent;
                 n->pair = T();
             }  
+
+            node *compare(T p, node *n){
+                if (p.first < n->pair.first && n->leftC)
+                    return (n->leftC);
+                else if(p.first > n->pair.first && n->rightC)
+                    return (n->rightC);
+                else
+                    return n;
+            }
 
             T insertNode(T p){
                 node *tmp = root;
@@ -99,20 +119,96 @@ namespace ft{
                 return p;
             }         
 
-            node *compare(T p, node *n){
-                if (p.first < n->pair.first && n->leftC)
-                    return (n->leftC);
-                else if(p.first > n->pair.first && n->rightC)
-                    return (n->rightC);
-                else
-                    return n;
+            void deleteNode(T p){
+                node* toDelete = findNode(p);
+                //node is root and have no child
+                if (toDelete == root && !toDelete->leftC && !toDelete->rightC){
+                    std::cout << "ROOT todelete : "<<toDelete->pair.first << " has been removed from the tree"<< std::endl;
+                    delete toDelete;
+                    root = new node();
+                    return;
+                }
+                //node is a leaf
+                if (!toDelete->leftC && !toDelete->rightC){
+                    if (toDelete->parent->leftC == toDelete)
+                        toDelete->parent->leftC = NULL;
+                    else
+                        toDelete->parent->rightC = NULL;
+
+                    delete toDelete;
+                }
+                //node have one child
+                //left child:
+                else if (toDelete->leftC && !toDelete->rightC){
+                    //not root :
+                    if (toDelete->parent){
+                        if (toDelete->parent->leftC == toDelete){
+
+                            toDelete->parent->leftC = toDelete->leftC;
+                            toDelete->leftC->parent = toDelete->parent;
+                        }
+                        else if (toDelete->parent->rightC == toDelete){
+                            toDelete->parent->rightC = toDelete->rightC;
+                            toDelete->rightC->parent = toDelete->parent;
+                        }
+                    }
+                    //root
+                    else{
+                        root = toDelete->leftC;
+                        toDelete->leftC->parent = NULL;
+                    }
+
+                        std::cout << "todelete : "<<toDelete->pair.first << " has been removed from the tree"<< std::endl;
+                    delete toDelete; 
+                }
+                //right child
+                else if (!toDelete->leftC && toDelete->rightC){
+                    if (toDelete->parent){
+                        if (toDelete->parent->leftC == toDelete){
+
+                            toDelete->parent->leftC = toDelete->leftC;
+                            toDelete->leftC->parent = toDelete->parent;
+                        }
+                        else if (toDelete->parent->rightC == toDelete){
+                            toDelete->parent->rightC = toDelete->rightC;
+                            toDelete->rightC->parent = toDelete->parent;
+                        }
+                    }
+                    else{
+                        root = toDelete->leftC;
+                        toDelete->leftC->parent = NULL;
+                    }
+
+                    std::cout << "todelete : "<<toDelete->pair.first << " has been removed from the tree"<< std::endl;
+                    delete toDelete; 
+                }
+                //node have two child : one of them will be deplaced on the end of the previous branch
+                // else
+                // {
+
+                // }
+            }
+
+            node* findNode(T p){
+                node *findMe= new node(p);
+            
+                node *treeNode = root;
+
+                while(findMe->pair.first != treeNode->pair.first){
+                    if (findMe->pair.first > treeNode->pair.first)   
+                        treeNode = findNext(treeNode);
+                    if (findMe->pair.first < treeNode->pair.first)   
+                        treeNode = findPrevious(treeNode);
+                }
+                delete findMe;
+
+                return treeNode;
             }
 
             node *findMin(){
                 node *tmp = root;
                 while (tmp->leftC != NULL){
                     tmp = tmp->leftC;
-                    //std::cout << tmp->pair.first << std::endl;
                 }
                 return tmp;
             }
@@ -121,6 +217,33 @@ namespace ft{
                 node *tmp = n;
                 while (tmp->leftC != NULL){
                     tmp = tmp->leftC;
+                }
+                return tmp;
+            }
+
+            node* findMax(){
+                node *tmp = root;
+                if (tmp->rightC){
+                    while (tmp->rightC){
+                        tmp = tmp->rightC;
+                    }
+                }
+                return tmp;
+            }
+
+            node* findMax(node *n){
+                node *tmp = n;
+                //on recherche le parent avec la key la plus elevée
+                if (tmp->parent){
+                    while (tmp->parent && tmp->parent->pair.first > tmp->pair.first){
+                        tmp = tmp->parent;
+                    }
+                }
+                //on descend toute la branche droite
+                if (tmp->rightC){
+                    while (tmp->rightC){
+                        tmp = tmp->rightC;
+                    }
                 }
                 return tmp;
             }
@@ -144,16 +267,44 @@ namespace ft{
                 return NULL;
             }
 
-            void printTree(){
-                // node* tmp = findMin();
-                // while (tmp)
-                // {
-                //     std::cout << tmp->pair.first;
-                //     tmp = findNext(tmp);
-                // }
-                node* tmp = root;
-                std::cout << "root : " << tmp->pair.first << std::endl;
-
+            node* findPrevious(node *n){
+                node* tmp = n;
+                if (tmp->leftC){
+                    return tmp->leftC;
+                }
+                else if (tmp->parent){
+                    while(tmp->parent && tmp->parent->pair.first > tmp->pair.first)
+                        tmp = tmp->parent;
+                    return tmp->parent;
+                }
+                return NULL;
             }
+
+
+            void printBT(const std::string& prefix, const node* n, bool isLeft)
+            {
+                if( n != NULL )
+                {
+                    std::cout << prefix;
+
+                    std::cout << (isLeft ? "├──" : "└──" );
+
+                    // print the value of the n
+                    std::cout << n->pair.first << std::endl;
+
+                    // enter the next tree level - left and right branch
+                    printBT( prefix + (isLeft ? "│   " : "    "), n->leftC, true);
+                    printBT( prefix + (isLeft ? "│   " : "    "), n->rightC, false);
+                }
+                else
+                    std::cout << "tree is empty" << std::endl;
+            }
+
+            void printBT(const node* n)
+            {
+                printBT("", n, false);
+            }
+
+
     };
 }
