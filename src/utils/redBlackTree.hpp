@@ -252,7 +252,6 @@ namespace ft{
                                 toDelete->leftC->parent = nextDl;
                             }
                             else if (nextDl->rightC && toDelete != nextDl->parent){ // next node has rightChild and to delete is NOT the direct parent //OK
-                                std::cout << "todelete : "<<toDelete->pair.first << " has been removed from the tree " << nextDl->pair.first << std::endl;
                                 nextDl->rightC->parent = toDelete->rightC;
                                 toDelete->rightC->leftC = nextDl->rightC;
 
@@ -267,9 +266,46 @@ namespace ft{
                             }
                         }
                     }
-                    // else if (toDelete->parent == NULL){ //raaaah j'ai oublié ça
-                    //     root = 
-                    // }
+                    else if (toDelete == root){ // toDelete is root and has 2child
+                        node *nextDl = findNext(toDelete);
+
+                        if (toDelete->rightC == nextDl){ //nextdl is direct on toD's right
+                            nextDl->parent = NULL;
+
+                            nextDl->leftC = toDelete->leftC;
+                            toDelete->leftC->parent = nextDl;
+                            root = nextDl;
+                        }
+                        else if (toDelete->rightC != nextDl){ // nextdl isn't direct toD's right
+                            if (nextDl->rightC){ // and have a right child
+                                nextDl->parent = NULL;
+
+                                nextDl->leftC = toDelete->leftC;
+                                toDelete->leftC->parent = nextDl;
+                                
+                                toDelete->rightC->leftC = nextDl->rightC;
+                                nextDl->rightC->parent = toDelete->leftC;
+                                
+                                nextDl->rightC = toDelete->rightC;
+                                toDelete->rightC->parent = nextDl;
+                                root = nextDl;
+                            }
+                            else if (!nextDl->rightC){ // and doesn't have a right child
+                                std::cout << "todelete : "<<toDelete->pair.first << " has been removed from the tree " << nextDl->pair.first << std::endl;
+                                
+                                nextDl->parent = NULL;
+
+                                nextDl->leftC = toDelete->leftC;
+                                toDelete->leftC->parent = nextDl;
+
+                                nextDl->rightC = toDelete->rightC;
+                                toDelete->rightC->parent = nextDl;
+
+                                toDelete->rightC->leftC = NULL;
+                                root = nextDl;
+                            }
+                        }
+                    }
                     delete toDelete; 
                 }
             }
