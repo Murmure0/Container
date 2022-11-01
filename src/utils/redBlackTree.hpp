@@ -121,36 +121,68 @@ namespace ft{
 
             void deleteNode(T p){
                 node* toDelete = findNode(p);
-
                 //node is root and have no child // OK
-                if (toDelete == root && !toDelete->leftC && !toDelete->rightC){
-                    std::cout << "ROOT todelete : "<<toDelete->pair.first << " has been removed from the tree"<< std::endl;
-                    delete toDelete;
-                    root = new node();
-                    return;
-                }
+                // if (toDelete == root && !toDelete->leftC && !toDelete->rightC){
+                //     std::cout << "ROOT todelete : "<<toDelete->pair.first << " has been removed from the tree"<< std::endl;
+                //     delete toDelete;
+                //     root = new node();
+                //     return;
+                // }
                 //node is a leaf //OK
-                if (!toDelete->leftC && !toDelete->rightC){
-                    if (toDelete->parent->leftC == toDelete)
-                        toDelete->parent->leftC = NULL;
-                    else
-                        toDelete->parent->rightC = NULL;
+                if (!toDelete->leftC && !toDelete->rightC){ //on supprime une feuille
+                    if (toDelete->parent)
+                        toDelete->parent->leftC ? toDelete->parent->leftC = NULL : toDelete->parent->rightC = NULL;
 
+
+                    // if (toDelete->parent->leftC == toDelete && toDelete->parent)
+                    //     toDelete->parent->leftC = NULL;
+                    // else if (toDelete->parent->rightC == toDelete && toDelete->parent)
+                    //     toDelete->parent->rightC = NULL;
                     delete toDelete;
                 }
 
                 // toDelete has one child
+                /*
+                bool isLeftChild = (toDelete->parent->leftC == toDelete ? true : false);
+                if (has one child)
+                {
+                    bool hasLeftChild = (toDelete->leftC ? true : false); //does toDelete have a LeftChild?
+                    if (!toDelete->parent)
+                        hasLeftChild ? root = left : root = right;
+                    else if (isLeftChild)
+                        hasLeftChild ? toDelete->parent->leftC = toDelete->leftC : toDelete->parent->leftC = toDelete->rightC;
+                    else
+                        hasLeftChild ? toDelete->parent->rightC = toDelete->leftC : toDelete->parent->rightC = toDelete->rightC;
+                    hasLeftChild ? toDelete->leftC->parent = toDelete->parent : toDelete->rightC->parent = toDelete->parent;
+                    delete toDelete;
+                }
+
+                else if (has two children)
+                {
+                    node *replacer = smallest(toDelete->right);
+                    node *copy = new node(replacer->pair, toDelete->parent, toDelete->left, toDelete->right);
+
+                    if (!toDelete->parent)
+                        root = copy;
+                    else
+                        isLeftChild ? toDelete->parent->left = copy :  toDelete->parent->right = copy;
+                    toDelete->leftC->parent = copy;
+                    toDelete->rightC->parent = copy;
+                    delete toDelete;
+                    this->deleteNode(replacer); //must be done depending on pointer
+                }
+                */
 
                 else if (toDelete->leftC && !toDelete->rightC) { // toDelete has a left child: //OK
                     if (toDelete->parent){ //toDelete is not root :
+                        toDelete->leftC->parent = toDelete->parent;
                         if (toDelete->parent->leftC == toDelete){ //toDelete on its parent left  //OK
-
                             toDelete->parent->leftC = toDelete->leftC;
-                            toDelete->leftC->parent = toDelete->parent;
+                            // toDelete->leftC->parent = toDelete->parent;
                         }
                         else if (toDelete->parent->rightC == toDelete){ //toDelete is on its parent right //OK
                             toDelete->parent->rightC = toDelete->leftC;
-                            toDelete->leftC->parent = toDelete->parent;
+                            // toDelete->leftC->parent = toDelete->parent;
                         }
                     }
                     else{ //delete is root //OK
@@ -163,14 +195,14 @@ namespace ft{
 
                 else if (!toDelete->leftC && toDelete->rightC){// toDelete has a right child: //OK
                     if (toDelete->parent){ //toDelete is not root :
+                        toDelete->rightC->parent = toDelete->parent;
                         if (toDelete->parent->leftC == toDelete){ //toDelete on its parent left //OK
-
                             toDelete->parent->leftC = toDelete->rightC;
-                            toDelete->rightC->parent = toDelete->parent;
+                            // toDelete->rightC->parent = toDelete->parent;
                         }
                         else if (toDelete->parent->rightC == toDelete){ //toDelete on its parent right //OK
                             toDelete->parent->rightC = toDelete->rightC;
-                            toDelete->rightC->parent = toDelete->parent;
+                            // toDelete->rightC->parent = toDelete->parent;
                         }
                     }
                     else{ //delete is root //OK
@@ -232,16 +264,21 @@ namespace ft{
                         else if (toDelete->parent->rightC == toDelete){ //node to delete is at right of its parent //OK
 
                             if(!nextDl->rightC){ //next node : no child //OK
+                                
                                 if(nextDl == nextDl->parent->leftC)
                                     nextDl->parent->leftC = NULL;
                                 else if (nextDl == nextDl->parent->rightC)
-                                    nextDl->parent->rightC = NULL;
-                                
+                                    nextDl->parent->rightC = NULL; //pffff marche differement si a droite ou a gauche de root 
+
                                 nextDl->parent = toDelete->parent; //links w/ parent
                                 toDelete->parent->rightC = nextDl; 
 
                                 nextDl->leftC = toDelete->leftC; // links w/leftChild
                                 toDelete->leftC->parent = nextDl;
+                                
+                                nextDl->rightC = toDelete->rightC;
+                                toDelete->rightC->parent = nextDl;
+                                std::cout << "todelete : "<<toDelete->pair.first << " has been removed from the tree " << nextDl->pair.first << std::endl;
                             }
                             else if(nextDl->rightC && toDelete == nextDl->parent){ // next node has right child and to delete is the direct parent //OK
 
@@ -266,45 +303,25 @@ namespace ft{
                             }
                         }
                     }
-                    else if (toDelete == root){ // toDelete is root and has 2child
+                    else if (toDelete == root){ // toDelete is root and has 2child //
                         node *nextDl = findNext(toDelete);
-
-                        if (toDelete->rightC == nextDl){ //nextdl is direct on toD's right
                             nextDl->parent = NULL;
 
                             nextDl->leftC = toDelete->leftC;
                             toDelete->leftC->parent = nextDl;
-                            root = nextDl;
-                        }
-                        else if (toDelete->rightC != nextDl){ // nextdl isn't direct toD's right
-                            if (nextDl->rightC){ // and have a right child
-                                nextDl->parent = NULL;
 
-                                nextDl->leftC = toDelete->leftC;
-                                toDelete->leftC->parent = nextDl;
-                                
+                        if (toDelete->rightC != nextDl){ // nextdl isn't direct toD's right //Okay
+                            if (nextDl->rightC){ // and have a right child
                                 toDelete->rightC->leftC = nextDl->rightC;
                                 nextDl->rightC->parent = toDelete->leftC;
-                                
-                                nextDl->rightC = toDelete->rightC;
-                                toDelete->rightC->parent = nextDl;
-                                root = nextDl;
                             }
-                            else if (!nextDl->rightC){ // and doesn't have a right child
-                                std::cout << "todelete : "<<toDelete->pair.first << " has been removed from the tree " << nextDl->pair.first << std::endl;
-                                
-                                nextDl->parent = NULL;
-
-                                nextDl->leftC = toDelete->leftC;
-                                toDelete->leftC->parent = nextDl;
-
-                                nextDl->rightC = toDelete->rightC;
-                                toDelete->rightC->parent = nextDl;
-
+                            else if (!nextDl->rightC){ // and doesn't have a right child //Okay
                                 toDelete->rightC->leftC = NULL;
-                                root = nextDl;
                             }
+                            nextDl->rightC = toDelete->rightC;
+                            toDelete->rightC->parent = nextDl;
                         }
+                        root = nextDl;
                     }
                     delete toDelete; 
                 }
