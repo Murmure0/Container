@@ -36,7 +36,10 @@ namespace ft{
                     col = 0;
                 }
 
-                ~node() {}
+                ~node() {
+                    // delete leftC;
+                    // delete rightC;
+                }
 
                 node(node const &src) {
                     *this = src;
@@ -53,19 +56,19 @@ namespace ft{
             };
 
             node *root;
-            node *nullNode;
+            node *nullNode; //used ?
 
 
         public:
             ~rdb() {
-                //should clean the content of the tree, yep it should
-                //but it didn't for now
-                //bc i'm enjoying creating this beautiful tree.
-                //Feeling inspired, may clean later.
-                /*The constructor create an empty tree by initializing root to NULL value. 
-                Function Destroy() is implemented recursively whereby the function will destroy all nodes 
-                in the left subtree first, followed by destroying nodes in the right subtree. 
-                Lastly, the root node will be destroyed.*/
+                node* tmp = findMin();
+                node* toDel = tmp;
+                while (tmp){
+                    tmp = findNext(tmp);
+                    deleteNode(toDel);
+                    this->printBT(this->getRoot());
+                    toDel = tmp;
+                }
             }
 
             rdb() {
@@ -125,22 +128,28 @@ namespace ft{
 
             void deleteNode(node* toDelete){
 
+                bool isLeftChild = false;
+                if (toDelete->parent)
+                    isLeftChild = (toDelete->parent->leftC == toDelete); //toDelete is a left Child
+
                 if (!toDelete->leftC && !toDelete->rightC){ // No Child
                     if (toDelete->parent)
-                        toDelete->parent->leftC ? toDelete->parent->leftC = NULL : toDelete->parent->rightC = NULL;
+                        isLeftChild ? toDelete->parent->leftC = NULL : toDelete->parent->rightC = NULL;
                     else
                         root = NULL;
                     delete toDelete;
                 }
 
-                bool isLeftChild = (toDelete->parent->leftC == toDelete ? true : false); //toDelete is a left Child
                 //One Child
 
                 if ((toDelete->rightC && !toDelete->leftC) || (!toDelete->rightC && toDelete->leftC)){
+
                     bool hasLeftChild = (toDelete->leftC ? true : false); // toDelete has a left child
                     
-                    if (toDelete == root)
+                    if (toDelete == root){
                         hasLeftChild ? root = toDelete->leftC : root = toDelete->rightC;
+
+                    }
                     else if (isLeftChild)
                         hasLeftChild ? toDelete->parent->leftC = toDelete->leftC : toDelete->parent->leftC = toDelete->rightC;
                     else
@@ -151,6 +160,7 @@ namespace ft{
                 //Two Child
 
                 else if (toDelete->leftC && toDelete->rightC){
+
                     node *prevToDelete = findPrevious(toDelete);
                     node *substitute = new node(prevToDelete->pair, toDelete->parent, toDelete->leftC, toDelete->rightC);
 
@@ -163,38 +173,6 @@ namespace ft{
                     delete toDelete;
                     deleteNode(prevToDelete);
                 }
-                // toDelete has one child
-                /*
-                bool isLeftChild = (toDelete->parent->leftC == toDelete ? true : false);
-                if (has one child)
-                {
-                    bool hasLeftChild = (toDelete->leftC ? true : false); //does toDelete have a LeftChild?
-                    if (!toDelete->parent)
-                        hasLeftChild ? root = left : root = right;
-                    else if (isLeftChild)
-                        hasLeftChild ? toDelete->parent->leftC = toDelete->leftC : toDelete->parent->leftC = toDelete->rightC;
-                    else
-                        hasLeftChild ? toDelete->parent->rightC = toDelete->leftC : toDelete->parent->rightC = toDelete->rightC;
-                    hasLeftChild ? toDelete->leftC->parent = toDelete->parent : toDelete->rightC->parent = toDelete->parent;
-                    delete toDelete;
-                }
-
-                else if (has two children)
-                {
-                    node *replacer = smallest(toDelete->right);
-                    node *copy = new node(replacer->pair, toDelete->parent, toDelete->left, toDelete->right);
-
-                    if (!toDelete->parent)
-                        root = copy;
-                    else
-                        isLeftChild ? toDelete->parent->left = copy :  toDelete->parent->right = copy;
-                    toDelete->leftC->parent = copy;
-                    toDelete->rightC->parent = copy;
-                    delete toDelete;
-                    this->deleteNode(replacer); //must be done depending on pointer
-                }
-                */
-
             }
 
             node* findNode(T p){
@@ -214,6 +192,9 @@ namespace ft{
             }
 
             node *findMin(){
+                if (root == NULL){
+                    return NULL;
+                }
                 node *tmp = root;
                 while (tmp->leftC != NULL){
                     tmp = tmp->leftC;
@@ -222,6 +203,9 @@ namespace ft{
             }
 
             node *findMin(node *n){
+                if (root == NULL){
+                    return NULL;
+                }
                 node *tmp = n;
                 while (tmp->leftC != NULL){
                     tmp = tmp->leftC;
@@ -230,6 +214,9 @@ namespace ft{
             }
 
             node* findMax(){
+                if (root == NULL){
+                    return NULL;
+                }
                 node *tmp = root;
                 if (tmp->rightC){
                     while (tmp->rightC){
@@ -240,6 +227,9 @@ namespace ft{
             }
 
             node* findMax(node *n){
+                if (root == NULL){
+                    return NULL;
+                }
                 node *tmp = n;
                 //on recherche le parent avec la key la plus elevée
                 if (tmp->parent){

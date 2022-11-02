@@ -10,10 +10,11 @@ int main(){
     ft::pair<int, int> d(36, 120);
     ft::pair<int, int> h(40, 120);
     ft::pair<int, int> e(34, 120);
-    ft::pair<int, int> i(31, 120);
+    ft::pair<int, int> i(29, 120);
 
     //ft::rdb< ft::pair<int, int> > nullTree;
     ft::rdb< ft::pair<int, int> > notTree(b);
+    // ft::rdb< ft::pair<int, int> > notTree;
     // notTree.print();
     notTree.insertNode(f);
     notTree.insertNode(c);
@@ -33,7 +34,8 @@ int main(){
     
     notTree.printBT(notTree.getRoot());
 
-    notTree.deleteNode(f); //10
+    // notTree.deleteNode(f); //10
    
-    notTree.printBT(notTree.getRoot());
+    // notTree.printBT(notTree.getRoot());
+    std::cout << notTree.findNext(notTree.findNode(f))->pair.first << std::endl;
 } 
