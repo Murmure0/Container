@@ -15,3 +15,13 @@ namespace ft{
     {return (x < y); } 
     };
 }
+
+/*
+    node *node1;
+    node *node2;
+
+    if I write this : *node1 < *node2
+    it means this : value_compare(node1->content, node2->content)
+    or this : key_compare(node1->content.first, node2->content.first)
+    beacause I did an operator overload in my RBNode
+*/

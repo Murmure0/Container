@@ -5,62 +5,73 @@
 
 namespace ft{
 
-    template <class T>
-    class rdb {
+    template <class T, class Compare = ft::less<T>, class Alloc = std::allocator<T> >
+    class BsT {
         private:
 
             class node{
+
                 public:
-                T pair;
-                node *parent;
-                node *leftC;
-                node *rightC;
-                bool col;
 
-                node(){
-                    pair = T();
-                    parent = NULL;
-                    leftC = NULL;
-                    rightC = NULL;
-                    col = 0;
-                }
+                    T       pair;
+                    node    *parent;
+                    node    *leftC;
+                    node    *rightC;
+                    bool    col;
 
-                node(T p) : pair(p) {
-                    parent = NULL;
-                    leftC = NULL;
-                    rightC = NULL;
-                    col = 0;
-                }
+                    node(){
+                        pair = T();
+                        parent = NULL;
+                        leftC = NULL;
+                        rightC = NULL;
+                        col = 0;
+                    }
 
-                node(T p, node*par, node*lC, node*rC) : pair(p), parent(par), leftC(lC), rightC(rC) {
-                    col = 0;
-                }
+                    node(T p) : pair(p) {
+                        parent = NULL;
+                        leftC = NULL;
+                        rightC = NULL;
+                        col = 0;
+                    }
 
-                ~node() {
-                    // delete leftC;
-                    // delete rightC;
-                }
+                    node(T p, node*par, node*lC, node*rC) : pair(p), parent(par), leftC(lC), rightC(rC) {
+                        col = 0;
+                    }
 
-                node(node const &src) {
-                    *this = src;
-                }
+                    ~node() {
+                    }
 
-                node &operator=(node const &rhs){
-                    pair = rhs.pair;
-                    parent = rhs.parent; 
-                    leftC = rhs.leftC; 
-                    rightC = rhs.rightC; 
-                    col = rhs.col;
-                    return *this;
-                }
+                    node(node const &src) {
+                        *this = src;
+                    }
+
+                    node &operator=(node const &rhs){
+                        pair = rhs.pair;
+                        parent = rhs.parent; 
+                        leftC = rhs.leftC; 
+                        rightC = rhs.rightC; 
+                        col = rhs.col;
+                        return *this;
+                    }
+                
+                    operator			node<const T, Compare>() const;
+                    bool				operator==(node const &right) const;
+                    bool				operator!=(node const &right) const;
+                    bool				operator<(node const &right) const;
+                    bool				operator>(node const &right) const;
+                    bool				operator<=(node const &right) const;
+                    bool				operator>=(node const &right) const;
             };
 
-            node *root;
+            // var privee de tree :
+
+            node *root; //manque le _
             node *nullNode; //used ?
+            const Compare _comp;
 
 
         public:
-            ~rdb() {
+            ~BsT() {
                 node* tmp = findMin();
                 node* toDel = tmp;
                 while (tmp){
@@ -71,11 +82,11 @@ namespace ft{
                 }
             }
 
-            rdb() {
+            BsT() {
                 root = NULL;
             }
 
-            rdb(T p) {
+            BsT(T p) {
                
                 root = new node(p);
                 nullNode = new node;
@@ -305,4 +316,6 @@ namespace ft{
 
 
     };
+
+
 }
