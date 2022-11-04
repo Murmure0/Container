@@ -2,12 +2,15 @@
 #include <iostream>
 #define RED 1
 #define BLACK 0
+#include "binary_function.hpp"
 
 namespace ft{
 
     template <class T, class Compare = ft::less<T>, class Alloc = std::allocator<T> >
     class BsT {
-        private:
+
+
+        public:
 
             class node{
 
@@ -54,30 +57,28 @@ namespace ft{
                         return *this;
                     }
                 
-                    operator			node<const T, Compare>() const;
-                    bool				operator==(node const &right) const;
-                    bool				operator!=(node const &right) const;
-                    bool				operator<(node const &right) const;
-                    bool				operator>(node const &right) const;
-                    bool				operator<=(node const &right) const;
-                    bool				operator>=(node const &right) const;
             };
+
+
+        private:
+
 
             // var privee de tree :
 
             node *root; //manque le _
             node *nullNode; //used ?
             const Compare _comp;
-
+            //
 
         public:
+
             ~BsT() {
                 node* tmp = findMin();
                 node* toDel = tmp;
                 while (tmp){
                     tmp = findNext(tmp);
                     deleteNode(toDel);
-                    this->printBT(this->getRoot());
+                    //this->printBT(this->getRoot());
                     toDel = tmp;
                 }
             }
@@ -90,7 +91,6 @@ namespace ft{
                
                 root = new node(p);
                 nullNode = new node;
-                std::cout << "Content root first : " << root->pair.first  << " second : " << root->pair.second << " color : " << root->col << std::endl;
             }
 
             node* getRoot(){

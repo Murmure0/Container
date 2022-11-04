@@ -1,8 +1,8 @@
 #pragma once
-#include <map>
 #include "../utils/binary_function.hpp"
 #include "../utils/pair.hpp"
 #include "../utils/redBlackTree.hpp"
+#include "../iterators/treeIterator.hpp"
 
 
 /*
@@ -26,6 +26,9 @@
 
 namespace ft{
 
+    template < class Pair, class Compare, class Alloc, class Node, class BsT >
+    class treeIterator;
+
     template < class Key, class T, class Compare = ft::less<Key>,
             class Alloc = std::allocator<ft::pair<const Key,T> > >
     class map{
@@ -33,7 +36,7 @@ namespace ft{
 
             // CLASSES
 
-            class value_compare:: public ft::binary_function< pair<const Key, T>, pair<const Key, T>, bool >
+            class value_compare : public ft::binary_function< pair<const Key, T>, pair<const Key, T>, bool >
             {
                 friend class map;
 
@@ -43,11 +46,11 @@ namespace ft{
 
                 public:
             
-                bool operator() (const value_type& x, const value_type& y) const
+                bool operator() (const pair<const Key, T>& x, const pair<const Key, T>& y) const
                 {
                     return comp(x.first, y.first); // use Compare based on ft::less, on the key of the pair
                 }
-            }
+            };
 
             typedef Key                                      key_type;
             typedef T                                        mapped_type;
@@ -60,16 +63,21 @@ namespace ft{
             typedef typename allocator_type::const_pointer   const_pointer;
             typedef typename allocator_type::size_type       size_type;
             typedef typename allocator_type::difference_type difference_type;
+            typedef ft::BsT<value_type, value_compare, Alloc>              tree_type;
+            typedef ft::BsT<const value_type, value_compare, Alloc>        const_tree_type;
+            typedef typename tree_type::node                                         node_type;
+            typedef typename const_tree_type::node                                   const_node_type;
 
-            typedef typename ft::tree_iterator< value_type, value_compare,Alloc, ft::BsT<value_type, value_compare >::node >                iterator;
-            typedef typename ft::tree_iterator< const value_type, value_compare, Alloc, ft::BsT<const value_type, value_compare>::node >          const_iterator;
+            typedef ft::treeIterator< value_type, value_compare, allocator_type, node_type , tree_type >                   iterator;
+
+            typedef ft::treeIterator< const value_type, value_compare, allocator_type, const_node_type , tree_type >        const_iterator;
             typedef std::reverse_iterator<iterator>          reverse_iterator;
             typedef std::reverse_iterator<const_iterator>    const_reverse_iterator;
         
         private :
 
             //rbt<value_type, Alloc, value_compare> _tree;
-            BsT _tree;
+            BsT<value_type, value_compare, Alloc> _tree;
             size_type _size;
             key_compare _key_comp;
             value_compare _value_comp;
