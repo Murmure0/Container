@@ -1,9 +1,15 @@
 #pragma once
-#include "../containers/map.hpp"
+// #include "../containers/map.hpp"
 #include "../utils/redBlackTree.hpp"
 
 namespace ft{
-    template < class Pair, class Compare = ft::less<Pair>, class Alloc = std::allocator<Pair> , class Node = typename ft::BsT < Pair, Compare, Alloc >::node, class BsT = typename ft::BsT< Pair, Compare, Alloc > >
+
+
+    template <class T, class Compare, class Alloc>
+    class BsT;
+
+
+    template < class Pair, class Compare = ft::less<Pair>, class Alloc = std::allocator<Pair> , class Node = typename ft::BsT < Pair, Compare, Alloc >::node>
     class treeIterator
     {
         public:
@@ -14,57 +20,67 @@ namespace ft{
             treeIterator(treeIterator const &src){
                 *this = src;
             }
-            treeIterator(Node *n) : _node(n->pair), _comp(Compare()){return ;}
+            treeIterator(Node *n) : _node(n), _comp(Compare()){return ;}
 
             treeIterator &operator=(treeIterator const &rhs){
                 _comp = rhs._comp;
                 _node = rhs._node;
+                return *this;
             }
 
             // Operators
 
-            treeIterator& operator*() const{
+            Pair& operator*() const{
                 return (_node->pair);
             }
 
-            treeIterator* operator->() const{ 
+            Pair* operator->() const{ 
                 return (&_node->pair);
             }
 
             treeIterator& operator++(){
-                _node = _tree.findNext(_node); 
+                _node = _node->findNext(); 
+                
+                // std::cout << _node->pair.first << std::endl;
                 return (*this);
             }
 
             treeIterator  operator++(int){
                 treeIterator tmp(*this);
-                _node = _tree.findNext(_node);
+                _node = _node->findNext();
                 return tmp;
             }
 
             treeIterator& operator--(){
-                _node = _tree.findPrevious(_node);
+                _node = _node->findPrevious();
                 return (*this);
             }
 
             treeIterator  operator--(int){
                 treeIterator tmp(*this);
-                _node = _tree.findPrevious(_node);
+                _node = _node->findPrevious();
                 return tmp;
             }
 
             // Const caster
 
-            // operator			treeIterator< const Pair, Compare, Alloc, Node >() const;
+            operator			treeIterator< const Pair, Compare, Alloc, Node >() const{
+                const treeIterator &it = *this;
+		        return reinterpret_cast<const treeIterator<const Pair, Compare, Node > & >(it);
+            }
+
 			// operator			node_pointer() const;
 
             Node* const &base() const{return _node;}
+
+        
+
+
 
         private:
 
             Node*    _node;
             Compare  _comp;
-            BsT     _tree;
     };
 
 

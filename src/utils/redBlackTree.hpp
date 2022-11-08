@@ -3,6 +3,8 @@
 #define RED 1
 #define BLACK 0
 #include "binary_function.hpp"
+#include "../iterators/treeIterator.hpp"
+
 
 namespace ft{
 
@@ -12,7 +14,10 @@ namespace ft{
 
         public:
 
-            class node{
+            typedef Compare             value_compare;
+        
+
+            class node {
 
                 public:
 
@@ -56,9 +61,65 @@ namespace ft{
                         col = rhs.col;
                         return *this;
                     }
-                
+
+                    node *findMin(){
+                        node *tmp = this;
+
+                        while (tmp->leftC != NULL){
+                            tmp = tmp->leftC;
+                        }
+                        return tmp;
+                    }
+
+                    node* findMax(){
+                        node *tmp = this;
+                        
+                        while (tmp->rightC){
+                            tmp = tmp->rightC;
+                        }
+                        return tmp;
+                    }
+
+                    node* findNext(){
+                        node* tmp = this;
+                        //s'il y a une branche a droite, on cherche la plus petite valeur
+                        if (tmp->rightC){
+                            tmp = tmp->rightC;
+                            return (tmp->findMin());
+                        }
+                        //sinon on remonte dans le parent 
+                        else {
+                            while (tmp->parent && _comp(tmp->parent->pair, tmp->pair)){
+                                tmp = tmp->parent;
+                            }
+                            if( tmp->parent ){
+
+                                return tmp->parent;
+                            }
+                        }
+                        return NULL;
+                    }
+
+                    node* findPrevious(){
+
+                        //qd on est sur le node end ca va cracher, bisou, faudra renvoyer root.findmax()
+
+                        node* tmp = this;
+                        if (tmp->leftC){
+                            tmp = tmp->leftC;
+                            return tmp->findMax();
+                        }
+                        else {
+                            while(tmp->parent && _comp(tmp->pair, tmp->parent->pair))
+                                tmp = tmp->parent;
+                            return tmp->parent;
+                        }
+                        return NULL;
+                    }
             };
 
+            typedef node          node_type;
+            typedef typename Alloc::template rebind<node_type>::other allocator_type;
 
         private:
 
@@ -67,8 +128,10 @@ namespace ft{
 
             node *root; //manque le _
             node *nullNode; //used ?
-            const Compare _comp;
+            static Compare _comp;
+            // const static end   _end;
             //
+            allocator_type _alloc;
 
         public:
 
@@ -78,7 +141,6 @@ namespace ft{
                 while (tmp){
                     tmp = findNext(tmp);
                     deleteNode(toDel);
-                    //this->printBT(this->getRoot());
                     toDel = tmp;
                 }
             }
@@ -89,8 +151,9 @@ namespace ft{
 
             BsT(T p) {
                
-                root = new node(p);
-                nullNode = new node;
+                root = _alloc.allocate(1);
+                _alloc.construct(root, node_type(p));
+                nullNode = _alloc.allocate(1);
             }
 
             node* getRoot(){
@@ -106,9 +169,9 @@ namespace ft{
             }  
 
             node *compare(T p, node *n){
-                if (p.first < n->pair.first && n->leftC)
+                if (_comp(p, n->pair) && n->leftC)
                     return (n->leftC);
-                else if(p.first > n->pair.first && n->rightC)
+                else if(_comp(n->pair, p) && n->rightC)
                     return (n->rightC);
                 else
                     return n;
@@ -117,8 +180,13 @@ namespace ft{
             T insertNode(T p){
                 node *tmp = root;
                 node *tmp2 = NULL;
+                
+                if (!tmp){
+                    root = _alloc.allocate(1);
+                    _alloc.construct(root, node_type(p));
+                }
                 while (tmp){
-                    if (p.first == tmp->pair.first)
+                    if (!_comp(p,tmp->pair) && !_comp(tmp->pair, p))
                         return T(tmp->pair.first, 0);
                     tmp2 = compare(p, tmp);
                     if (tmp2 == tmp)
@@ -126,10 +194,14 @@ namespace ft{
                     else 
                         tmp = tmp2;
                 }
-                if (p.first < tmp->pair.first)
-                    (tmp->leftC) = new node(p, tmp, NULL, NULL);
-                else
-                    (tmp->rightC) = new node(p, tmp, NULL, NULL);
+                if (_comp(p, tmp->pair)){
+                    (tmp->leftC) = _alloc.allocate(1);
+                    _alloc.construct((tmp->leftC), node_type(p, tmp, NULL, NULL));
+                }
+                else{
+                    (tmp->rightC) = _alloc.allocate(1);
+                    _alloc.construct((tmp->rightC), node_type(p, tmp, NULL, NULL));
+                }
                 return p;
             }         
 
@@ -148,7 +220,8 @@ namespace ft{
                         isLeftChild ? toDelete->parent->leftC = NULL : toDelete->parent->rightC = NULL;
                     else
                         root = NULL;
-                    delete toDelete;
+                    _alloc.destroy(toDelete);
+                    _alloc.deallocate(toDelete, 1);
                 }
 
                 //One Child
@@ -166,14 +239,18 @@ namespace ft{
                     else
                         hasLeftChild ? toDelete->parent->rightC = toDelete->leftC : toDelete->parent->rightC = toDelete->rightC;
                     hasLeftChild ? toDelete->leftC->parent = toDelete->parent : toDelete->rightC->parent = toDelete->parent;
-                    delete toDelete;
+                    _alloc.destroy(toDelete);
+                    _alloc.deallocate(toDelete, 1);
                 }
                 //Two Child
 
                 else if (toDelete->leftC && toDelete->rightC){
 
                     node *prevToDelete = findPrevious(toDelete);
-                    node *substitute = new node(prevToDelete->pair, toDelete->parent, toDelete->leftC, toDelete->rightC);
+                    //node *substitute = new node(prevToDelete->pair, toDelete->parent, toDelete->leftC, toDelete->rightC);
+
+                    node *substitute = _alloc.allocate(1);
+                    _alloc.construct(substitute, node_type(prevToDelete->pair, toDelete->parent, toDelete->leftC, toDelete->rightC));
 
                     if (toDelete == root)
                         root = substitute;
@@ -181,113 +258,71 @@ namespace ft{
                         isLeftChild ? toDelete->parent->leftC = substitute : toDelete->parent->rightC = substitute;
                     toDelete->leftC->parent = substitute;
                     toDelete->rightC->parent = substitute;
-                    delete toDelete;
+                    _alloc.destroy(toDelete);
+                    _alloc.deallocate(toDelete, 1);
                     deleteNode(prevToDelete);
                 }
             }
 
             node* findNode(T p){
-                node *findMe= new node(p);
+                node *findMe= _alloc.allocate(1);
+                _alloc.construct(findMe, node_type(p));
             
                 node *treeNode = root;
 
-                while(findMe->pair.first != treeNode->pair.first){
-                    if (findMe->pair.first > treeNode->pair.first)   
+                while(_comp(findMe->pair,treeNode->pair) || _comp(treeNode->pair,findMe->pair)){ 
+                    if (!_comp(findMe->pair, treeNode->pair))   
                         treeNode = findNext(treeNode);
-                    if (findMe->pair.first < treeNode->pair.first)   
+                    if (_comp(findMe->pair, treeNode->pair))   
                         treeNode = findPrevious(treeNode);
                 }
-                delete findMe;
-
+                _alloc.destroy(findMe);
+                _alloc.deallocate(findMe, 1);
                 return treeNode;
             }
 
-            node *findMin(){
+            node *findMin(){ 
                 if (root == NULL){
                     return NULL;
                 }
-                node *tmp = root;
-                while (tmp->leftC != NULL){
-                    tmp = tmp->leftC;
-                }
-                return tmp;
+                return root->findMin();
             }
 
             node *findMin(node *n){
-                if (root == NULL){
-                    return NULL;
-                }
-                node *tmp = n;
-                while (tmp->leftC != NULL){
-                    tmp = tmp->leftC;
-                }
-                return tmp;
+               return n->findMin();
             }
 
             node* findMax(){
                 if (root == NULL){
                     return NULL;
                 }
-                node *tmp = root;
-                if (tmp->rightC){
-                    while (tmp->rightC){
-                        tmp = tmp->rightC;
-                    }
-                }
-                return tmp;
+                return root->findMax();
             }
 
-            node* findMax(node *n){
-                if (root == NULL){
-                    return NULL;
-                }
-                node *tmp = n;
-                //on recherche le parent avec la key la plus elevée
-                if (tmp->parent){
-                    while (tmp->parent && tmp->parent->pair.first > tmp->pair.first){
-                        tmp = tmp->parent;
-                    }
-                }
-                //on descend toute la branche droite
-                if (tmp->rightC){
-                    while (tmp->rightC){
-                        tmp = tmp->rightC;
-                    }
-                }
-                return tmp;
+            node* findMax(node *n){ 
+                return n->findMax();
             }
 
             node* findNext(node *n){
-                node* tmp = n;
-                //s'il y a une branche a droite, on cherche la plus petite valeur
-                if (tmp->rightC){
-                    tmp = tmp->rightC;
-                    return (findMin(tmp));
-                }
-                //sinon on remonte dans le parent 
-                else if (tmp->parent){
-                    while (tmp->parent && tmp->parent->pair.first < tmp->pair.first){
-                        tmp = tmp->parent;
-                    }
-                    if(tmp->parent ){
-                        return tmp->parent;
-                    }
-                }
-                return NULL;
+                return n->findNext();
             }
 
             node* findPrevious(node *n){
-                node* tmp = n;
-                if (tmp->leftC){
-                    return tmp->leftC;
-                }
-                else if (tmp->parent){
-                    while(tmp->parent && tmp->parent->pair.first > tmp->pair.first)
-                        tmp = tmp->parent;
-                    return tmp->parent;
-                }
-                return NULL;
+                return n->findPrevious();
             }
+
+
+            treeIterator<T, Compare> begin(){
+                return treeIterator<T, Compare>(findMin());
+            }
+
+            treeIterator<T, Compare> end(){
+                return treeIterator<T, Compare>(findMin());
+            }
+
+
+
+
 
 
             void printBT(const std::string& prefix, const node* n, bool isLeft)
@@ -317,5 +352,7 @@ namespace ft{
 
     };
 
+    template <class T, class Compare, class Alloc>
+    typename BsT<T, Compare, Alloc>::value_compare BsT<T, Compare, Alloc>::_comp = BsT<T, Compare, Alloc>::value_compare();
 
 }
