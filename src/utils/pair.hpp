@@ -13,7 +13,7 @@ namespace ft{
         second_type second;
         
         public:
-            pair() : first(), second() {}
+            pair() : first(000), second() {}
             ~pair(){}
 
             template<class U, class V> 
