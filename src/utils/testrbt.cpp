@@ -13,7 +13,7 @@ int main(){
     ft::pair<int, int> g(40, 120);
     ft::pair<int, int> a(38, 120);
     ft::pair<int, int> d(36, 120);
-    // //ft::pair<int, int> h(40, 120);
+    ft::pair<int, int> h(35, 120);
     // ft::pair<int, int> e(34, 120);
     // ft::pair<int, int> i(29, 120);
 
@@ -59,7 +59,8 @@ int main(){
 //     //std::cout << notTree.findMax(notTree.findMin())->pair.first << std::endl;
     
  notTree.printBT(notTree.getRoot());
-notTree.deleteNode(a);
+
+std::cout << "upper bound : "<< (notTree.upper_bound(h))->first << std::endl;
 
  notTree.printBT(notTree.getRoot());
 //     std::cout << it->first << std::endl;

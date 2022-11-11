@@ -97,8 +97,7 @@ namespace ft{
                                 return tmp->parent;
                             }
                         }
-                        
-                        return NULL;
+                        return end;
                     }
 
                     node* findPrevious(node *end){
@@ -115,7 +114,7 @@ namespace ft{
                                 tmp = tmp->parent;
                             return tmp->parent;
                         }
-                        return NULL;
+                        return end;
                     }
             };
 
@@ -131,19 +130,19 @@ namespace ft{
             node *_end;
             static Compare _comp;
             allocator_type _alloc;
+            size_t         _size;
 
         public:
 
             ~BsT() {
                 node* tmp = findMin();
                 node* toDel = tmp;
-                while (tmp){
+                while (tmp != _end){
                     tmp = findNext(tmp);
-                    if(!tmp)
-                        break;
                     deleteNode(toDel);
                     toDel = tmp;
                 }
+                printBT(root);
                 _alloc.destroy(_end);
                 _alloc.deallocate(_end, 1);
             }
@@ -152,6 +151,7 @@ namespace ft{
                 _end = _alloc.allocate(1);
                 _alloc.construct(_end, node_type());
                 root = _end;
+                _size = 0;
             }
 
             BsT(T p) {
@@ -160,10 +160,22 @@ namespace ft{
                 _end = _alloc.allocate(1);
                 _alloc.construct(_end, node_type());
                 setEndAfter(root);
+                _size = 1;
+            }
+
+            BsT &operator=(BsT const &rhs){
+                root = rhs.root;
+                _end = rhs._end; 
+                _size = rhs._size;
+                return *this;
             }
 
             node* getRoot(){
                 return root;
+            }
+
+            size_t getSize(){
+                return _size;
             }
 
             void setEndAfter(node *n){
@@ -189,6 +201,7 @@ namespace ft{
                     root = _alloc.allocate(1);
                     _alloc.construct(root, node_type(p));
                     setEndAfter(root);
+                    _size++;
                 }
                 while (tmp != _end){
                     if (!_comp(p,tmp->pair) && !_comp(tmp->pair, p))
@@ -203,24 +216,28 @@ namespace ft{
                     (tmp->leftC) = _alloc.allocate(1);
                     _alloc.construct((tmp->leftC), node_type(p, tmp, NULL, NULL));
                     setEndAfter(tmp->leftC);
+                    _size++;
                 }
                 else{
                     (tmp->rightC) = _alloc.allocate(1);
                     _alloc.construct((tmp->rightC), node_type(p, tmp, NULL, NULL));
                     setEndAfter(tmp->rightC);
+                   _size++;   
                 }
                 return p;
             }         
 
             void deleteNode(T p){
-                node* toDelete = findNode(p); //nop
+                node* toDelete = findNode(p);
+
+                if (toDelete == _end)
+                    return;
                 deleteNode(toDelete);}
 
 
-            void deleteNode(node* toDelete){
-                
-
+            void deleteNode(node* toDelete){        
                 bool isLeftChild = false;
+
                 if (toDelete->parent) //is toDelete a left Child ?
                     isLeftChild = (toDelete->parent->leftC == toDelete); 
 
@@ -233,21 +250,26 @@ namespace ft{
                         
                         _alloc.destroy(toDelete);
                         _alloc.deallocate(toDelete, 1);
+                        _size--;
+
+                        return ;
                     }
                     else{
                         _alloc.destroy(toDelete);
                         _alloc.deallocate(toDelete, 1);
-                        setEndAfter(root);
+                        root = _end;
+                        _size--;
+
+                        return ;
                     }
                 }
      
                 //One Child
                 if ((toDelete->rightC && toDelete->leftC == _end) || (toDelete->rightC == _end && toDelete->leftC)){
                     bool hasLeftChild = (toDelete->leftC != _end ? true : false); // toDelete has a left child
-                    
+            
                     if (toDelete == root){
                         hasLeftChild ? root = toDelete->leftC : root = toDelete->rightC;
-
                     }
                     else if (isLeftChild)
                         hasLeftChild ? toDelete->parent->leftC = toDelete->leftC : toDelete->parent->leftC = toDelete->rightC;
@@ -256,14 +278,14 @@ namespace ft{
                     hasLeftChild ? toDelete->leftC->parent = toDelete->parent : toDelete->rightC->parent = toDelete->parent;
                     _alloc.destroy(toDelete);
                     _alloc.deallocate(toDelete, 1);
+                    _size--;
+
+                    return ;
                 }
 
                 //Two Child
                 else if (toDelete->leftC && toDelete->rightC){
-                    std::cout << "two child to rule them all : " << std::endl;
-
                     node *prevToDelete = findPrevious(toDelete);
-                    //node *substitute = new node(prevToDelete->pair, toDelete->parent, toDelete->leftC, toDelete->rightC);
 
                     node *substitute = _alloc.allocate(1);
                     _alloc.construct(substitute, node_type(prevToDelete->pair, toDelete->parent, toDelete->leftC, toDelete->rightC));
@@ -276,6 +298,8 @@ namespace ft{
                     toDelete->rightC->parent = substitute;
                     _alloc.destroy(toDelete);
                     _alloc.deallocate(toDelete, 1);
+                    _size--;
+
                     deleteNode(prevToDelete);
                 }
             }
@@ -286,21 +310,16 @@ namespace ft{
                 node *treeNode = root;
 
                 while(_comp(findMe->pair,treeNode->pair) || _comp(treeNode->pair,findMe->pair)){ 
-                    // std::cout << "findme : " << findMe->pair.first << std::endl;
-                    // std::cout << "TreeNode : " << treeNode->pair.first << std::endl;
-                    // std::cout << "Findnext(treenode) : " << findNext(treeNode)->pair.first << std::endl;
-                    // std::cout << "FindPrev(treenode) : " << findPrevious(treeNode)->pair.first << std::endl;
-                    if (!_comp(findMe->pair, treeNode->pair) && findNext(treeNode) != _end)   
+                    if (!_comp(findMe->pair, treeNode->pair)){
                         treeNode = findNext(treeNode);
-                    else if (_comp(findMe->pair, treeNode->pair) && findPrevious(treeNode) != _end)   
-                        treeNode = findPrevious(treeNode);
-                    
-
-                    // else if (findNext(treeNode) == _end || findPrevious(treeNode) == _end){
-                    //     std::cout << "Mais : " << treeNode->pair.first << std::endl;
-                    //     break;
-                    // }
-     
+                        if (treeNode == _end){
+                            break;
+                        }
+                    }   
+                    else if (_comp(findMe->pair, treeNode->pair))   
+                        treeNode = findPrevious(treeNode);  
+                        if (treeNode == _end)
+                            break;   
                 }
                 _alloc.destroy(findMe);
                 _alloc.deallocate(findMe, 1);
@@ -309,9 +328,7 @@ namespace ft{
 
             node *findMin(){ 
                 if (root == _end){
-                // if (root == NULL){
                     return _end;
-                    // return NULL;
                 }
                 return root->findMin(_end);
             }
@@ -322,9 +339,7 @@ namespace ft{
 
             node* findMax(){
                 if (root == _end){
-                // if (root == NULL){
                     return _end;
-                    // return NULL;
                 }
                 return root->findMax(_end);
             }
@@ -347,13 +362,72 @@ namespace ft{
             }
 
             treeIterator<T, Compare> end(){
+                return treeIterator<T, Compare>(_end);
+            }
+
+            treeIterator<T, Compare> rbegin(){
                 return treeIterator<T, Compare>(findMax());
             }
 
+            treeIterator<T, Compare> rend(){
+                return treeIterator<T, Compare>(_end);
+            }
 
+            void clear(){
+                node* tmp = findMin();
+                node* toDel = tmp;
+                while (tmp){
+                    tmp = findNext(tmp);
+                    if(!tmp)
+                        break;
+                    deleteNode(toDel);
+                    toDel = tmp;
+                }
+                root = _end;
+                _size = 0;
+            }
+        
+            size_t count(const T& k) {
+                if (findNode(k) == _end)
+                    return (0);
+                else
+                    return (1);
+            }
 
+            treeIterator<T, Compare> lower_bound (const T& k){
+                node *ret = findNode(k);
 
+                if (ret != _end) // on a trouvé la clé exacte, on la retourne
+                    return treeIterator<T, Compare>(ret);
+                else //on a pas trouvé, on va chercher la valeur qui va apres
+                {
+                    node *findMe= _alloc.allocate(1);
+                    _alloc.construct(findMe, node_type(k));
+                    node *treeNode = findMin();
 
+                    while(_comp(treeNode->pair,findMe->pair) && treeNode != _end){ //tant que le findMe est plus petit que le treenode, on next treenode
+                        treeNode = findNext(treeNode);
+                    }   
+                    _alloc.destroy(findMe);
+                    _alloc.deallocate(findMe, 1);
+                    return treeIterator<T, Compare>(treeNode);
+                }
+            }
+
+            treeIterator<T, Compare> upper_bound (const T& k){
+                 node *findMe= _alloc.allocate(1);
+                _alloc.construct(findMe, node_type(k));
+                node *treeNode = findMin();
+
+                while((!(!_comp(treeNode->pair,findMe->pair) && !_comp(findMe->pair,treeNode->pair))) 
+                        && _comp(treeNode->pair,findMe->pair) 
+                        && treeNode != _end){ //pas d'egalité, treenode < findMe et pas a la fin => next TreeNode
+                    treeNode = findNext(treeNode);
+                }   
+                _alloc.destroy(findMe);
+                _alloc.deallocate(findMe, 1);
+                return treeIterator<T, Compare>(treeNode);
+            }
 
             void printBT(const std::string& prefix, const node* n, bool isLeft)
             {

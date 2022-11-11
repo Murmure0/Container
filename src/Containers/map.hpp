@@ -114,7 +114,117 @@ namespace ft{
                 return (_tree.end());
             }
 
+            const_iterator end() const{
+                return (_tree.end());
+            }
+
+            reverse_iterator rbegin(){
+                return(_tree.rbegin());
+            }
+
+            const_reverse_iterator rbegin() const{
+                return(_tree.rbegin());
+            }
             
+            reverse_iterator rend(){
+                return (_tree.end());
+            }
+
+            const_reverse_iterator rend() const{
+                return (_tree.end());
+            }
+
+            bool empty() const{
+                return (_size);
+            }
+
+            size_type size() const{
+                return (_size);
+            }
+
+            size_type max_size() const{
+                return (_alloc.max_size());
+            }
+
+            mapped_type& operator[] (const key_type& k){
+                return (_tree.findNode(k)->pair.second);
+            }
+
+            // pair<iterator,bool> insert (const value_type& val){
+
+            // }
+            // iterator insert (iterator position, const value_type& val);
+            // template <class InputIterator>
+            // void insert (InputIterator first, InputIterator last);
+
+            // void erase (iterator position);
+            // size_type erase (const key_type& k);
+            // void erase (iterator first, iterator last);
+
+            void swap (map& x){
+                map *tmp = this;
+                this = x;
+                x = tmp;
+            }
+
+            void clear(){
+                _tree.clear();
+                _size = _tree.getSize();
+
+            }
+
+            key_compare key_comp() const{
+                return _key_comp;
+            }
+
+            value_compare value_comp() const{
+                return _value_comp;
+            }
+
+            iterator find (const key_type& k){
+                pair p(k, 0);
+
+                return iterator(_tree.findNode(p));
+            }
+
+            const_iterator find (const key_type& k) const{
+                pair p(k, 0);
+
+                return const_iterator(_tree.findNode(p));
+            }
+
+            size_type count (const key_type& k) const{
+                pair p(k, 0);
+
+                return(_tree.count(p));
+            }
+
+            iterator lower_bound (const key_type& k)    /*Returns an iterator pointing to the first element in the container whose key 
+                                                            is not considered to go before k (i.e., either it is equivalent or goes after).*/
+            {
+                pair p(k, 0);
+                return (_tree.lower_bound(p));
+            } 
+
+            const_iterator lower_bound (const key_type& k) const{
+                pair p(k, 0);
+                return (_tree.lower_bound(p));
+            }
+
+            iterator upper_bound (const key_type& k){
+                pair p(k, 0);
+                return (_tree.upper_bound(p));
+            }
+
+            const_iterator upper_bound (const key_type& k) const{
+                pair p(k, 0);
+                return (_tree.upper_bound(p));
+            }
+            
+            // pair<const_iterator,const_iterator> equal_range (const key_type& k) const;
+            // pair<iterator,iterator>             equal_range (const key_type& k);
+
+            allocator_type get_allocator() const{return _value_comp;}
         private :
 
             BsT<value_type, value_compare, Alloc> _tree;
