@@ -1,6 +1,7 @@
 #include "redBlackTree.hpp"
 #include "pair.hpp"
 #include "../iterators/treeIterator.hpp"
+#include "../containers/map.hpp"
 
 
 #include<map>
@@ -18,7 +19,7 @@ int main(){
     // ft::pair<int, int> i(29, 120);
 
     //ft::rdb< ft::pair<int, int> > nullTree;
-    ft::BsT< ft::pair<int, int> > notTree(b);
+    ft::BsT< ft::pair<int, int> > notTree;
         
 
     // ft::rdb< ft::pair<int, int> > notTree;
@@ -29,6 +30,10 @@ int main(){
     notTree.insertNode(a);
     notTree.insertNode(d);
     notTree.insertNode(g);
+    notTree.printBT(notTree.getRoot());
+    
+    ft::map<int,int> mop;
+
 //     // // notTree.print();
 //     // // // notTree.print();
 //     // // // notTree.print();
@@ -36,6 +41,10 @@ int main(){
 //    // notTree.insertNode(h);
 //     notTree.insertNode(e);
 //     notTree.insertNode(i);
+
+// ft::pair<ft::map<int,int>::iterator,ft::map<int,int>::iterator> ret;
+
+ft::map<int, int>::iterator it;
 
 // /*PRINT*/
 
@@ -58,11 +67,11 @@ int main(){
 //     }
 //     //std::cout << notTree.findMax(notTree.findMin())->pair.first << std::endl;
     
- notTree.printBT(notTree.getRoot());
 
-std::cout << "upper bound : "<< (notTree.upper_bound(h))->first << std::endl;
+// std::cout << "upper bound : "<< (notTree.upper_bound(h))->first << std::endl;
 
- notTree.printBT(notTree.getRoot());
+
+//  notTree.printBT(notTree.getRoot());
 //     std::cout << it->first << std::endl;
 //     ++it;
 //     std::cout << it->first << std::endl;

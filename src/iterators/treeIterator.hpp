@@ -1,6 +1,7 @@
 #pragma once
-// #include "../containers/map.hpp"
+#include "../containers/map.hpp"
 #include "../utils/redBlackTree.hpp"
+#include "../utils/binary_function.hpp"
 
 namespace ft{
 
@@ -9,21 +10,22 @@ namespace ft{
     class BsT;
 
 
-    template < class Pair, class Compare = ft::less<Pair>, class Alloc = std::allocator<Pair> , class Node = typename ft::BsT < Pair, Compare, Alloc >::node>
+    template < class Pair, class Compare = ft::less< Pair>, class Alloc = std::allocator<Pair> , class Node = typename ft::BsT < Pair, Compare, Alloc >::node>
     class treeIterator
     {
         public:
 
-            treeIterator() {return ;};
-            ~treeIterator() {return ;};
+            treeIterator(){
+                return ;}
+                
+            ~treeIterator() {return ;}
 
             treeIterator(treeIterator const &src){
                 *this = src;
             }
-            treeIterator(Node *n) : _node(n), _comp(Compare()){return ;}
+            treeIterator(Node *n) : _node(n) {return ;}
 
             treeIterator &operator=(treeIterator const &rhs){
-                _comp = rhs._comp;
                 _node = rhs._node;
                 return *this;
             }
@@ -74,19 +76,19 @@ namespace ft{
             Node* const &base() const{return _node;}
 
         
-
+            Compare getComp() const{return _node->comp;}
 
 
         private:
 
             Node*    _node;
-            Compare  _comp;
     };
 
 
             template <class Pair, class Compare, class Alloc, class Node>
             bool operator== (const treeIterator< Pair, Compare, Alloc, Node >& lhs, const treeIterator<Pair, Compare, Alloc, Node>& rhs){
-                return !_comp(lhs._node->pair, rhs._node->pair) && !_comp(rhs._node->pair, lhs._node->pair);
+                return !lhs.getComp(lhs.base().pair, rhs.base().pair) && !rhs.getComp(rhs.base().pair, lhs.base().pair);
+                // return !_comp(lhs._node->pair, rhs._node->pair) && !_comp(rhs._node->pair, lhs._node->pair);
             }
 
             template <class Pair, class Compare, class Alloc, class Node>
