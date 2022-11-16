@@ -108,19 +108,21 @@ namespace ft{
             }
 
             iterator begin(){
-                return (_tree.begin()); 
+                return _tree.findMin();
+                // return (_tree.begin()); 
             }
 
             const_iterator begin() const{
-                return (_tree.begin()); 
+                return reinterpret_cast< typename ft::BsT<const value_type, value_compare, Alloc>::node* >(_tree.findMin());
+                // return (_tree.begin()); 
             }
 
             iterator end(){
-                return (_tree.end());
+                return (_tree.getEnd());
             }
 
             const_iterator end() const{
-                return (_tree.end());
+                return reinterpret_cast< typename ft::BsT<const value_type, value_compare, Alloc>::node* >(_tree.getEnd());
             }
 
             reverse_iterator rbegin(){
@@ -140,7 +142,7 @@ namespace ft{
             }
 
             bool empty() const{
-                return (_size);
+                return (!_size);
             }
 
             size_type size() const{
@@ -160,19 +162,23 @@ namespace ft{
             pair<iterator,bool> insert (const value_type& val){
                 pair<iterator, bool> ret;
 
-                // std::cout << "Inserting with a pair" << std::endl;
                 ret = _tree.insert_val(val);
-                _size++;
+                if (ret.second)
+                    _size++;
                 return ret;
             }
 
             iterator insert (iterator position, const value_type& val){
                 // std::cout << "Inserting with a hint" << std::endl;
                 
-                pair<iterator, bool> ret;
+                // pair<iterator, bool> ret;
 
                 node_type* hint  = position.base();
-                ret = _tree.insertHint(hint, val);
+                
+                node_type* ret = _tree.insertHint(hint, val);
+                if (ret)
+                    _size++;
+                return ret;
 
             }
 
@@ -180,7 +186,7 @@ namespace ft{
             void insert (InputIterator first, InputIterator last){
                 // std::cout << "Inserting with a range" << std::endl;
                 for(; first != last; first++){
-                    pair<iterator, bool> ret = _tree.insertVal((*first).pair);
+                    pair<iterator, bool> ret = _tree.insert_val(*first);
                     if (ret.second == true)
                         _size++;
                 }
@@ -216,7 +222,6 @@ namespace ft{
             void clear(){
                 _tree.clear();
                 _size = _tree.getSize();
-
             }
 
             key_compare key_comp() const{

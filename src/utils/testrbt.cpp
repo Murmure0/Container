@@ -8,22 +8,27 @@
 
 
 int main(){
-    ft::pair<int, int> b(30, 120);
-    ft::pair<int, int> c(29, 120);
-    ft::pair<int, int> f(29, 120);
-    ft::pair<int, int> g(40, 120);
-    ft::pair<int, int> a(38, 120);
-    ft::pair<int, int> d(36, 120);
-    ft::pair<int, int> h(35, 120);
+    ft::pair<int, std::string> a(42, "120");
+    ft::pair<int, std::string> b(42, "120");
+    ft::pair<int, std::string> c(50, "120");
+    ft::pair<int, std::string> d(35, "120");
+    ft::pair<int, std::string> e(45, "120");
+    ft::pair<int, std::string> f(21, "120");
+    ft::pair<int, std::string> g(38, "120");
+    // ft::pair<int, std::string> h(35, "120");
 
-    ft::map<int,int> mop;
+    ft::map<int,std::string> mop;
 
+    mop.insert(a);
     mop.insert(b);
-    mop.insert(g);
     mop.insert(c);
+    mop.insert(d);
+    mop.insert(e);
+    mop.insert(f);
+    mop.insert(g);
 
-    ft::map<int, int>::iterator it = mop.begin();
-    ft::map<int, int>::iterator ite = mop.end();
+    ft::map<int, std::string>::iterator it = mop.begin();
+    ft::map<int, std::string>::iterator ite = mop.end();
 
  
     for(; it != ite; it++){
