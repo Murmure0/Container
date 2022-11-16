@@ -112,7 +112,7 @@ namespace ft{
             }
 
             const_iterator begin() const{
-                return static_cast<const_iterator>(_tree.begin()); 
+                return (_tree.begin()); 
             }
 
             iterator end(){
@@ -171,7 +171,7 @@ namespace ft{
                 
                 pair<iterator, bool> ret;
 
-                node_type* hint  = *position;
+                node_type* hint  = position.base();
                 ret = _tree.insertHint(hint, val);
 
             }

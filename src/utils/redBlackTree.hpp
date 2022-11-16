@@ -274,7 +274,7 @@ namespace ft{
                 }
                 else{
                     tmp = tmp->findNext();
-                    tmp->left = _alloc.allocate(1);
+                    tmp->leftC = _alloc.allocate(1);
                     _alloc.construct((tmp->leftC), node_type(_end, val, tmp, NULL, NULL, _comp));
                     setEndAfter(tmp->leftC);
                     tmp = tmp->leftC;
