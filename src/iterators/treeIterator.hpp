@@ -10,7 +10,7 @@ namespace ft{
     class BsT;
 
 
-    template < class Pair, class Compare = ft::less< Pair>, class Alloc = std::allocator<Pair> , class Node = typename ft::BsT < Pair, Compare, Alloc >::node>
+    template < class Pair, class Compare = ft::less< Pair>, class Alloc = std::allocator<Pair> , class node = typename ft::BsT < Pair, Compare, Alloc >::node>
     class treeIterator
     {
         public:
@@ -23,10 +23,10 @@ namespace ft{
             treeIterator(treeIterator const &src){
                 *this = src;
             }
-            treeIterator(Node *n) : _node(n) {return ;}
+            treeIterator(node *n) : _node(n) {return ;}
 
             treeIterator &operator=(treeIterator const &rhs){
-                _node = rhs._node;
+                _node = rhs._node; // ne copie pas la paire du node ?
                 return *this;
             }
 
@@ -66,33 +66,32 @@ namespace ft{
 
             // Const caster
 
-            operator			treeIterator< const Pair, Compare, Alloc, Node >() const{
+            operator			treeIterator< const Pair, Compare, Alloc, node >() const{
                 const treeIterator &it = *this;
-		        return reinterpret_cast<const treeIterator<const Pair, Compare, Node > & >(it);
+		        return reinterpret_cast<const treeIterator<const Pair, Compare, node > & >(it);
             }
 
 			// operator			node_pointer() const;
 
-            Node* const &base() const{return _node;}
+            node* const &base() const{return _node;}
 
         
-            Compare getComp() const{return _node->comp;}
+            bool getComp(Pair lhs, Pair rhs) const{return _node->comp(lhs, rhs);}
 
 
         private:
 
-            Node*    _node;
+            node*    _node;
     };
 
 
-            template <class Pair, class Compare, class Alloc, class Node>
-            bool operator== (const treeIterator< Pair, Compare, Alloc, Node >& lhs, const treeIterator<Pair, Compare, Alloc, Node>& rhs){
-                return !lhs.getComp(lhs.base().pair, rhs.base().pair) && !rhs.getComp(rhs.base().pair, lhs.base().pair);
-                // return !_comp(lhs._node->pair, rhs._node->pair) && !_comp(rhs._node->pair, lhs._node->pair);
+            template <class Pair, class Compare, class Alloc, class node>
+            bool operator== (const treeIterator< Pair, Compare, Alloc, node >& lhs, const treeIterator<Pair, Compare, Alloc, node>& rhs){
+                return (!lhs.getComp(lhs.base()->pair, rhs.base()->pair) && !rhs.getComp(rhs.base()->pair, lhs.base()->pair));
             }
 
-            template <class Pair, class Compare, class Alloc, class Node>
-            bool operator != (const treeIterator<Pair, Compare, Alloc, Node>& lhs, const treeIterator<Pair, Compare, Alloc, Node>& rhs){
+            template <class Pair, class Compare, class Alloc, class node>
+            bool operator != (const treeIterator<Pair, Compare, Alloc, node>& lhs, const treeIterator<Pair, Compare, Alloc, node>& rhs){
                 return !(lhs == rhs);
             }
 

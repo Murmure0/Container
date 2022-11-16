@@ -82,7 +82,8 @@ namespace ft{
             explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) 
                 : _tree(_value_comp), _size(0), _key_comp(comp), _value_comp(comp), _alloc(alloc) {
 
-                    std::cout << "A MAP HAVE BEEN CONSTRUCTED, YEAY !!!" << std::endl;    
+                    // std::cout << "A MAP HAVE BEEN CONSTRUCTED, YEAY !!!\n" << std::endl; 
+ 
             
             }
 
@@ -111,7 +112,7 @@ namespace ft{
             }
 
             const_iterator begin() const{
-                return (_tree.begin()); 
+                return static_cast<const_iterator>(_tree.begin()); 
             }
 
             iterator end(){
@@ -152,18 +153,21 @@ namespace ft{
 
             mapped_type& operator[] (const key_type& k){
                 pair<key_type, int> p(k, 0);
+                // std::cout << "Inserting with a key" << std::endl;
                 return (_tree.findNode(p)->pair.second);
             }
 
             pair<iterator,bool> insert (const value_type& val){
                 pair<iterator, bool> ret;
 
-                ret = _tree.insertVal(val);
+                // std::cout << "Inserting with a pair" << std::endl;
+                ret = _tree.insert_val(val);
                 _size++;
                 return ret;
             }
 
             iterator insert (iterator position, const value_type& val){
+                // std::cout << "Inserting with a hint" << std::endl;
                 
                 pair<iterator, bool> ret;
 
@@ -174,6 +178,7 @@ namespace ft{
 
             template <class InputIterator>
             void insert (InputIterator first, InputIterator last){
+                // std::cout << "Inserting with a range" << std::endl;
                 for(; first != last; first++){
                     pair<iterator, bool> ret = _tree.insertVal((*first).pair);
                     if (ret.second == true)

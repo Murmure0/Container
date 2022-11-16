@@ -22,45 +22,61 @@ namespace ft{
 
                     const value_compare &comp;
                     T       pair;
-                    node    *parent;
-                    node    *leftC;
-                    node    *rightC;
+                    node*   parent;
+                    node*   leftC;
+                    node*   rightC;
+                    node*   end;
                     bool    col;
 
-                    explicit node(const value_compare& comp = value_compare()) : comp(comp), pair() {
+                    explicit node(node* e, const value_compare& comp = value_compare()) : comp(comp), pair(), end(e) {
                         parent = NULL;
                         leftC = NULL;
                         rightC = NULL;
                         col = BLACK;
+                            // std::cout << "constructeur par defaut node : adresse de end : " << end << "and e : " << e << std::endl;
                     }
 
-                    node(T p, const value_compare& comp = value_compare()) : comp(comp), pair(p) {
+                    node(node* e, T p, const value_compare& comp = value_compare()) : comp(comp), pair(p), end(e) {
                         parent = NULL;
                         leftC = NULL;
                         rightC = NULL;
                         col = BLACK;
+                            // std::cout << "constructeur par value node : adresse de end : " << end << std::endl;
                     }
 
-                    node(T p, node*par, node*lC, node*rC, const value_compare& comp = value_compare()) : comp(comp), pair(p), parent(par), leftC(lC), rightC(rC) {
+                    node(node* e,T p, node*par, node*lC, node*rC, const value_compare& comp = value_compare())
+                     : comp(comp), pair(p), parent(par), leftC(lC), rightC(rC), end(e) {
                         col = BLACK;
                     }
 
                     ~node() {
                     }
 
-                    node(node const &src) : comp(src.comp), pair(src.pair), parent(src.parent), leftC(src.leftC), rightC(src.rightC), col(src.col) {}
+                    /*
+                    */
+                   	operator				typename BsT<const T, Compare>::node() const
+	                {
+		                return BsT<const T, Compare>::node(*this);
+                    }
+
+                    node(node const &src) : comp(src.comp), pair(src.pair), parent(src.parent), leftC(src.leftC), rightC(src.rightC), end(src.end), col(src.col) {}
+
+                    node* getEnd(){
+                        return this->end;
+                    }
 
                     node &operator=(node const &rhs){
                         // pair = rhs.pair;
-                        std::cout << "YOU SHOULDNT BE THERE" << std::endl;
+                        // std::cout << "YOU SHOULDNT BE THERE" << std::endl;
                         parent = rhs.parent; 
                         leftC = rhs.leftC; 
                         rightC = rhs.rightC; 
                         col = rhs.col;
+                        end = rhs.end;
                         return *this;
                     }
 
-                    node *findMin(node *end){
+                    node *findMin(){
                         node *tmp = this;
 
                         while (tmp->leftC && tmp->leftC != end){
@@ -69,7 +85,7 @@ namespace ft{
                         return tmp;
                     }
 
-                    node* findMax(node *end){
+                    node* findMax(){
                         node *tmp = this;
                         
                         while (tmp->rightC && tmp->rightC != end){
@@ -78,13 +94,13 @@ namespace ft{
                         return tmp;
                     }
 
-                    node* findNext(node *end){
+                    node* findNext(){
                         node* tmp = this;
 
                         //s'il y a une branche a droite, on cherche la plus petite valeur
                         if (tmp->rightC && tmp->rightC != end){
                             tmp = tmp->rightC;
-                            return (tmp->findMin(end));
+                            return (tmp->findMin());
                         }
                         //sinon on remonte dans le parent 
                         else if (tmp->parent){
@@ -98,14 +114,14 @@ namespace ft{
                         return end;
                     }
 
-                    node* findPrevious(node *end){
+                    node* findPrevious(){
 
                         //qd on est sur le node end ca va cracher, bisou, faudra renvoyer root.findmax()
 
                         node* tmp = this;
                         if (tmp->leftC){
                             tmp = tmp->leftC;
-                            return tmp->findMax(end);
+                            return tmp->findMax();
                         }
                         else {
                             while(tmp->parent && comp(tmp->pair, tmp->parent->pair))
@@ -124,7 +140,7 @@ namespace ft{
 
             // var privee de tree :
 
-            node*                   _root; //manque le _
+            node*                   _root;
             node*                   _end;
             const value_compare     &_comp;
             allocator_type          _alloc;
@@ -140,14 +156,13 @@ namespace ft{
                     deleteNode(toDel);
                     toDel = tmp;
                 }
-                printBT(_root);
                 _alloc.destroy(_end);
                 _alloc.deallocate(_end, 1);
             }
 
-            explicit BsT(const value_compare& comp = value_compare()) : _comp(comp) {
+            explicit BsT(const value_compare& comp = value_compare()) : _comp(comp){
                 _end = _alloc.allocate(1);
-                _alloc.construct(_end, node_type(comp));
+                _alloc.construct(_end, node_type(_end, comp));
                 _root = _end;
                 _size = 0;
             }
@@ -168,11 +183,11 @@ namespace ft{
                 return *this;
             }
 
-            node* getRoot(){
+            node* getRoot() const{
                 return _root;
             }
 
-            size_t getSize(){
+            size_t getSize() const{
                 return _size;
             }
 
@@ -197,9 +212,11 @@ namespace ft{
                 
                 if (tmp == _end){
                     _root = _alloc.allocate(1);
-                    _alloc.construct(_root, node_type(p, _comp));
+                    _alloc.construct(_root, node_type(_end, p, _comp));
                     setEndAfter(_root);
                     _size++;
+                    if (_root->leftC == _end && _root->rightC == _end){
+                    }
                     return _root;
                 }
                 while (tmp != _end){
@@ -213,16 +230,14 @@ namespace ft{
                 }
                 if (_comp(p, tmp->pair)){
                     (tmp->leftC) = _alloc.allocate(1);
-                    _alloc.construct((tmp->leftC), node_type(p, tmp, NULL, NULL, _comp));
+                    _alloc.construct((tmp->leftC), node_type(_end, p, tmp, NULL, NULL, _comp));
                     setEndAfter(tmp->leftC);
                     _size++;
                     return tmp->leftC;
                 }
                 else{
                     (tmp->rightC) = _alloc.allocate(1);
-                    std::cout << "BEFORE" << std::endl;
-                    _alloc.construct((tmp->rightC), node_type(p, tmp, NULL, NULL, _comp));
-                    std::cout << "AFTER" << std::endl;
+                    _alloc.construct((tmp->rightC), node_type(_end, p, tmp, NULL, NULL, _comp));
                     setEndAfter(tmp->rightC);
                    _size++;  
                    return tmp->rightC;
@@ -253,14 +268,14 @@ namespace ft{
 
                 if (tmp->rightC == _end){
                     tmp->rightC = _alloc.allocate(1);
-                    _alloc.construct((tmp->rightC), node_type(val, tmp, NULL, NULL, _comp));
+                    _alloc.construct((tmp->rightC), node_type(_end, val, tmp, NULL, NULL, _comp));
                     setEndAfter(tmp->rightC);
                     tmp = tmp->rightC;
                 }
                 else{
                     tmp = tmp->findNext();
                     tmp->left = _alloc.allocate(1);
-                    _alloc.construct((tmp->leftC), node_type(val, tmp, NULL, NULL, _comp));
+                    _alloc.construct((tmp->leftC), node_type(_end, val, tmp, NULL, NULL, _comp));
                     setEndAfter(tmp->leftC);
                     tmp = tmp->leftC;
                 }
@@ -352,7 +367,7 @@ namespace ft{
                     node *prevToDelete = findPrevious(toDelete);
 
                     node *substitute = _alloc.allocate(1);
-                    _alloc.construct(substitute, node_type(prevToDelete->pair, toDelete->parent, toDelete->leftC, toDelete->rightC, _comp));
+                    _alloc.construct(substitute, node_type(_end, prevToDelete->pair, toDelete->parent, toDelete->leftC, toDelete->rightC, _comp));
 
                     if (toDelete == _root)
                         _root = substitute;
@@ -368,72 +383,74 @@ namespace ft{
                 }
             }
 
-            node* findNode(T p){
-                node *findMe= _alloc.allocate(1);
-                _alloc.construct(findMe, node_type(p, _comp));
+            node* findNode(T p) const{
+                node findMe(_end, p, _comp);
                 node *treeNode = _root;
 
-                while(_comp(findMe->pair,treeNode->pair) || _comp(treeNode->pair,findMe->pair)){ 
-                    if (!_comp(findMe->pair, treeNode->pair)){
+                if (treeNode == _end)
+                    return _end;
+
+                while(_comp(findMe.pair,treeNode->pair) || _comp(treeNode->pair,findMe.pair)){ 
+                    if (!_comp(findMe.pair, treeNode->pair)){
                         treeNode = findNext(treeNode);
                         if (treeNode == _end){
                             break;
                         }
                     }   
-                    else if (_comp(findMe->pair, treeNode->pair))   
+                    else if (_comp(findMe.pair, treeNode->pair))   
                         treeNode = findPrevious(treeNode);  
                         if (treeNode == _end)
                             break;   
                 }
-                _alloc.destroy(findMe);
-                _alloc.deallocate(findMe, 1);
+                // _alloc.destroy(findMe);
+                // _alloc.deallocate(findMe, 1);
                 return treeNode;
             }
 
-            node *findMin(){ 
+            node *findMin() const{ 
                 if (_root == _end){
                     return _end;
                 }
-                return _root->findMin(_end);
+                return _root->findMin();
             }
 
-            node *findMin(node *n){
-               return n->findMin(_end);
+            node *findMin(node *n) const{
+               return n->findMin();
             }
 
-            node* findMax(){
+            node* findMax() const{
                 if (_root == _end){
                     return _end;
                 }
-                return _root->findMax(_end);
+                return _root->findMax();
             }
 
-            node* findMax(node *n){ 
-                return n->findMax(_end);
+            node* findMax(node *n) const{ 
+                return n->findMax();
             }
 
-            node* findNext(node *n){
-                return n->findNext(_end);
+            node* findNext(node *n) const{
+                return n->findNext();
             }
 
-            node* findPrevious(node *n){
-                return n->findPrevious(_end);
+            node* findPrevious(node *n) const{
+                return n->findPrevious();
             }
 
 
-            treeIterator<T, Compare> begin(){
+            treeIterator<T, Compare> begin() const{
                 return treeIterator<T, Compare>(findMin());
             }
 
-            treeIterator<T, Compare> end(){
+            treeIterator<T, Compare> end()const{
                 return treeIterator<T, Compare>(_end);
             }
 
-            treeIterator<T, Compare> rbegin(){
+            treeIterator<T, Compare> rbegin()const{
                 return treeIterator<T, Compare>(findMax());
             }
 
-            treeIterator<T, Compare> rend(){
+            treeIterator<T, Compare> rend()const{
                 return treeIterator<T, Compare>(_end);
             }
 
@@ -451,14 +468,14 @@ namespace ft{
                 _size = 0;
             }
         
-            size_t count(const T& k) {
+            size_t count(const T& k)  const{
                 if (findNode(k) == _end)
                     return (0);
                 else
                     return (1);
             }
 
-            treeIterator<T, Compare> lower_bound (const T& k){
+            treeIterator<T, Compare> lower_bound (const T& k) const{
                 node *ret = findNode(k);
 
                 if (ret != _end) // on a trouvé la clé exacte, on la retourne
@@ -466,7 +483,7 @@ namespace ft{
                 else //on a pas trouvé, on va chercher la valeur qui va apres
                 {
                     node *findMe= _alloc.allocate(1);
-                    _alloc.construct(findMe, node_type(k, _comp));
+                    _alloc.construct(findMe, node_type(_end, k, _comp));
                     node *treeNode = findMin();
 
                     while(_comp(treeNode->pair,findMe->pair) && treeNode != _end){ //tant que le findMe est plus petit que le treenode, on next treenode
@@ -478,9 +495,9 @@ namespace ft{
                 }
             }
 
-            treeIterator<T, Compare> upper_bound (const T& k){
-                 node *findMe= _alloc.allocate(1);
-                _alloc.construct(findMe, node_type(k, _comp));
+            treeIterator<T, Compare> upper_bound (const T& k) const{
+                node *findMe= _alloc.allocate(1); //faire ca sur la stack bisou
+                _alloc.construct(findMe, node_type(_end, k, _comp));
                 node *treeNode = findMin();
 
                 while((!(!_comp(treeNode->pair,findMe->pair) && !_comp(findMe->pair,treeNode->pair))) 
@@ -493,7 +510,7 @@ namespace ft{
                 return treeIterator<T, Compare>(treeNode);
             }
 
-            pair<treeIterator<T, Compare>,treeIterator<T, Compare> >             equal_range (const T& k){
+            pair<treeIterator<T, Compare>,treeIterator<T, Compare> >             equal_range (const T& k) const{
 
                 pair<const T, int> p(k, 0);
                 pair<treeIterator<T, Compare>, treeIterator<T, Compare> > ret;
