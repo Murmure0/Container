@@ -2,6 +2,7 @@
 #include "../containers/map.hpp"
 #include "../utils/redBlackTree.hpp"
 #include "../utils/binary_function.hpp"
+#include "itTraits.hpp"
 
 namespace ft{
 
@@ -14,6 +15,14 @@ namespace ft{
     class treeIterator
     {
         public:
+            typedef ft::treeIterator< Pair, Compare, Alloc, node>   iterator;
+            typedef ft::treeIterator< const Pair, Compare, Alloc, const typename ft::BsT< const Pair, Compare, Alloc >::node > const_iterator;
+
+            typedef Pair           value_type;
+            typedef ptrdiff_t      difference_type;
+            typedef Pair*              pointer;
+            typedef Pair&            reference;
+            typedef  typename ft::Iterator<ft::bidirectional_iterator_tag, Pair>::iterator_category    iterator_category;
 
             treeIterator(){
                 return ;}
@@ -23,6 +32,7 @@ namespace ft{
             treeIterator(treeIterator const &src){
                 *this = src;
             }
+
             treeIterator(node *n) : _node(n) {return ;}
 
             treeIterator &operator=(treeIterator const &rhs){
@@ -66,9 +76,10 @@ namespace ft{
 
             // Const caster
 
-            operator			treeIterator< const Pair, Compare, Alloc, node >() const{
-                const treeIterator &it = *this;
-		        return reinterpret_cast<const treeIterator<const Pair, Compare, node > & >(it);
+            operator			const_iterator() const{
+                const iterator &it = *this;
+                return reinterpret_cast<const_iterator & >(it);
+		        // return reinterpret_cast<treeIterator<const Pair, Compare, typename BsT<const Pair, Compare, Alloc>::node > & >(it);
             }
 
 			// operator			node_pointer() const;
@@ -87,7 +98,10 @@ namespace ft{
 
             template <class Pair, class Compare, class Alloc, class node>
             bool operator== (const treeIterator< Pair, Compare, Alloc, node >& lhs, const treeIterator<Pair, Compare, Alloc, node>& rhs){
-                return (!lhs.getComp(lhs.base()->pair, rhs.base()->pair) && !rhs.getComp(rhs.base()->pair, lhs.base()->pair));
+                return ( lhs.base() == rhs.base() );
+                // !lhs.getComp(lhs.base()->pair, rhs.base()->pair)
+                // &&
+                // !rhs.getComp(rhs.base()->pair, lhs.base()->pair));
             }
 
             template <class Pair, class Compare, class Alloc, class node>
