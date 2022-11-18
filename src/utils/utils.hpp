@@ -10,6 +10,4 @@ namespace ft{
             ++r;
         return r;
     }
-
-
 }

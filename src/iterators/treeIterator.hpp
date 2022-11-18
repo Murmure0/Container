@@ -16,7 +16,7 @@ namespace ft{
     {
         public:
             typedef ft::treeIterator< Pair, Compare, Alloc, node>   iterator;
-            typedef ft::treeIterator< const Pair, Compare, Alloc, const typename ft::BsT< const Pair, Compare, Alloc >::node > const_iterator;
+            typedef ft::treeIterator< const Pair, Compare, Alloc, typename ft::BsT< const Pair, Compare, Alloc >::node > const_iterator;
 
             typedef Pair           value_type;
             typedef ptrdiff_t      difference_type;
@@ -29,14 +29,12 @@ namespace ft{
                 
             ~treeIterator() {return ;}
 
-            treeIterator(treeIterator const &src){
-                *this = src;
-            }
+            treeIterator(treeIterator const &src) : _node(src._node) { return ;}
 
             treeIterator(node *n) : _node(n) {return ;}
 
             treeIterator &operator=(treeIterator const &rhs){
-                _node = rhs._node; // ne copie pas la paire du node ?
+                _node = rhs._node;
                 return *this;
             }
 
@@ -52,8 +50,7 @@ namespace ft{
 
             treeIterator& operator++(){
                 _node = _node->findNext(); 
-                
-                // std::cout << _node->pair.first << std::endl;
+
                 return (*this);
             }
 
@@ -76,10 +73,13 @@ namespace ft{
 
             // Const caster
 
+            //const_iterator -> iterator on const pair
+            //const iterator -> const iterator on pair
+            //const const_iterator -> const iterator on const pair
+
             operator			const_iterator() const{
                 const iterator &it = *this;
-                return reinterpret_cast<const_iterator & >(it);
-		        // return reinterpret_cast<treeIterator<const Pair, Compare, typename BsT<const Pair, Compare, Alloc>::node > & >(it);
+                return reinterpret_cast<const const_iterator & >(it);
             }
 
 			// operator			node_pointer() const;
@@ -96,16 +96,13 @@ namespace ft{
     };
 
 
-            template <class Pair, class Compare, class Alloc, class node>
-            bool operator== (const treeIterator< Pair, Compare, Alloc, node >& lhs, const treeIterator<Pair, Compare, Alloc, node>& rhs){
-                return ( lhs.base() == rhs.base() );
-                // !lhs.getComp(lhs.base()->pair, rhs.base()->pair)
-                // &&
-                // !rhs.getComp(rhs.base()->pair, lhs.base()->pair));
+            template <class Pair1, class Pair2, class Compare, class Alloc, class Node1, class Node2>
+            bool operator== (const treeIterator< Pair1, Compare, Alloc, Node1 >& lhs, const treeIterator<Pair2, Compare, Alloc, Node2>& rhs){
+                return ( lhs.base() == reinterpret_cast<Node1*>(rhs.base()) );
             }
 
-            template <class Pair, class Compare, class Alloc, class node>
-            bool operator != (const treeIterator<Pair, Compare, Alloc, node>& lhs, const treeIterator<Pair, Compare, Alloc, node>& rhs){
+            template <class Pair1, class Pair2, class Compare, class Alloc, class Node1, class Node2>
+            bool operator != (const treeIterator<Pair1, Compare, Alloc, Node1>& lhs, const treeIterator<Pair2, Compare, Alloc, Node2>& rhs){
                 return !(lhs == rhs);
             }
 

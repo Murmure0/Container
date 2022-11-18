@@ -6,27 +6,6 @@
 #include "../iterators/treeIterator.hpp"
 #include "../iterators/reverseIt.hpp"
 
-#include <iostream>
-
-/*
-    key_compare key_comp(); //par defaut std::less
-    rbtree<int> -> key_comp(1, 5) --> bool qui dit si 1 < 5
-
-    rbtree< pair<int, int> > -> key_comp(pair(1, 5), pair(5, 2)) --> key_comp n'est pas prevu pour ca 
-    //pour map en interne on peut faire ca :
-    key_comp(pair.first, autrePair.first); //compare des ints a nouveau
-    //a la place on fait ca plutot
-    value_compare val_comp();
-    val_comp(pair, autrePair);
-
-    //en interne en gros:
-    val_comp(key_comp, pair, autrePair)
-    {
-        return key_comp(pair.first, autrePair.first);
-    }
-
-*/
-
 namespace ft{
    template <class T, class Compare, class Alloc>
     class BsT;
@@ -74,40 +53,8 @@ namespace ft{
 
             typedef ft::treeIterator< value_type, value_compare, allocator_type, node_type >                   iterator;
             typedef ft::treeIterator< const value_type, value_compare, allocator_type, const_node_type>        const_iterator;
-            typedef std::reverse_iterator<iterator>                                                            reverse_iterator;
-            typedef std::reverse_iterator<const_iterator>                                                      const_reverse_iterator;
-
-
-/*
-'treeIterator<pair<...>,
-[2 * ...],
-ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const float, foo<int> > > >::node_type>'
-ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const float, foo<int> > > >::const_node_type>'
-
-'treeIterator<const pair<...>,
-[2 * ...],
-
-
-
-'ft::map<float, foo<int>, ft::less<float>,
-      std::__1::allocator<ft::pair<const float, foo<int> > > >::iterator' 
-      (aka
-      'treeIterator<pair<const float, foo<int> >, ft::map<float, foo<int>, ft::less<float>,
-      std::__1::allocator<ft::pair<const float, foo<int> > > >::value_compare, std::__1::allocator<ft::pair<const float, foo<int> > >,
-      ft::BsT<ft::pair<const float,
-      foo<int> >, ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const float, foo<int> > > >::value_compare, std::__1::allocator<ft::pair<const
-      float, foo<int> > > >::node>')
-      
-      to 'ft::treeIterator<const ft::pair<const float, foo<int> >, ft::map<float, foo<int>, ft::less<float>,
-      std::__1::allocator<ft::pair<const float, foo<int> > > >::value_compare, std::__1::allocator<ft::pair<const float, foo<int> > >, ft::BsT<const ft::pair<const float,
-      foo<int> >, ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const float, foo<int> > > >::value_compare, std::__1::allocator<ft::pair<const
-      float, foo<int> > > >::node>::const_iterator &' 
-      (aka 
-      'treeIterator<const const ft::pair<const float, foo<int> >, ft::map<float, foo<int>, ft::less<float>,
-      std::__1::allocator<ft::pair<const float, foo<int> > > >::value_compare, std::__1::allocator<ft::pair<const float, foo<int> > >,
-      const typename ft::BsT<const const
-      pair<const float, foo<int> >, value_compare, allocator<pair<const float, foo<int> > > >::node> &'
-*/
+            typedef ft::reverse_iterator< iterator >                                                            reverse_iterator;
+            typedef ft::reverse_iterator< const_iterator >                                                      const_reverse_iterator;
 
         private :
 
@@ -124,7 +71,6 @@ ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const flo
 
             explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) 
                 : _tree(_value_comp), _size(0), _key_comp(comp), _value_comp(comp), _alloc(alloc) {
-                    // std::cout << "A MAP HAVE BEEN CONSTRUCTED, YEAY !!!\n" << std::endl;
             }
 
             template <class It>
@@ -156,8 +102,6 @@ ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const flo
 
                 pair<iterator, bool> ret = this->insert(p);
                 return ret.first->second;
-                // std::cout << "Inserting with a key" << std::endl;
-                // return (_tree.findNode(p)->pair.second);
             }
 
 
@@ -165,7 +109,6 @@ ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const flo
 
             iterator begin(){
                 return _tree.findMin();
-                // return (_tree.begin()); 
             }
 
             const_iterator begin() const{
@@ -181,19 +124,21 @@ ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const flo
             }
 
             reverse_iterator rbegin(){
-                return(_tree.rbegin());
+                iterator it = static_cast<iterator>(_tree.getEnd());
+                return static_cast<reverse_iterator>(it);
             }
 
             const_reverse_iterator rbegin() const{
-                return(_tree.rbegin());
+                return static_cast<const_iterator>(reinterpret_cast< const_node_type* >(_tree.getEnd()));
             }
             
             reverse_iterator rend(){
-                return (_tree.end());
+                iterator it = static_cast<iterator>(_tree.findMin());
+                return static_cast<reverse_iterator>(it);
             }
 
             const_reverse_iterator rend() const{
-                return (_tree.end());
+                return static_cast<const_iterator>(reinterpret_cast< const_node_type* >(_tree.findMin()));
             }
 
             bool empty() const{
@@ -218,10 +163,6 @@ ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const flo
             }
 
             iterator insert (iterator position, const value_type& val){
-                // std::cout << "Inserting with a hint" << std::endl;
-                
-                // pair<iterator, bool> ret;
-
                 node_type* hint  = position.base();
                 
                 node_type* ret = _tree.insertHint(hint, val);
@@ -233,7 +174,6 @@ ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const flo
 
             template <class InputIterator>
             void insert (InputIterator first, InputIterator last){
-                // std::cout << "Inserting with a range" << std::endl;
                 for(; first != last; first++){
                     pair<iterator, bool> ret = _tree.insert_val(*first);
                     if (ret.second == true)
@@ -265,15 +205,17 @@ ft::map<float, foo<int>, ft::less<float>, std::__1::allocator<ft::pair<const flo
             }
 
             void swap (map& x){
-                tree_type tmp_tree = this->_tree;
-                size_t tmp_size = this->_size;
-                this->_tree = x._tree;
+                node_type*  tmp_end = this->_tree.getEnd();
+                node_type*  tmp_root = this->_tree.getRoot();
+                size_t      tmp_size = this->_size;
+
+                this->_tree.setRoot(x._tree.getRoot());
+                this->_tree.setEnd(x._tree.getEnd());
                 this->_size = x._size;
-                x._tree = tmp_tree;
+
+                x._tree.setRoot(tmp_root);
+                x._tree.setEnd(tmp_end);
                 x._size = tmp_size;
-                // map *tmp = this;
-                // this = x;
-                // x = tmp;
             }
 
             void clear(){

@@ -67,16 +67,6 @@ namespace ft{
                 }
             }
 
-            // BsT(T p, value_compare& comp = value_compare()) : _comp(comp) {
-            //     _root = _alloc.allocate(1);
-            //     _alloc.construct(_root, node(p));
-            //     _end = _alloc.allocate(1);
-            //     _alloc.construct(_end, node());
-            //     setEndAfter(_root);
-            //     _size = 1;
-            // }
-
-
             /*----------OPERATOR OVERLOADS-------------*/
 
             BsT &operator=(BsT const &rhs){
@@ -95,12 +85,20 @@ namespace ft{
                 return _root;
             }
 
+            void setRoot(node* ptr){
+                this->_root = ptr;
+            }
+
             size_t getSize() const{
                 return _size;
             }
 
             node* getEnd() const {
                 return _end;
+            }
+
+            void setEnd(node* ptr){
+                this->_end = ptr;
             }
 
             void    setNewRoot(node* root) //if you have to change the root, use this method instead of "="
@@ -110,7 +108,6 @@ namespace ft{
             }
 
             void setEndAfter(node *n){
-                // _end->parent = n;
                 n->leftC = _end;
                 n->rightC = _end;
             }  
@@ -275,7 +272,6 @@ namespace ft{
             
                     if (toDelete == _root){
                         hasLeftChild ? setNewRoot(toDelete->leftC) : setNewRoot(toDelete->rightC);
-                        // hasLeftChild ? _root = toDelete->leftC : _root = toDelete->rightC;
                     }
                     else if (isLeftChild)
                         hasLeftChild ? toDelete->parent->leftC = toDelete->leftC : toDelete->parent->leftC = toDelete->rightC;
@@ -298,7 +294,6 @@ namespace ft{
 
                     if (toDelete == _root)
                         setNewRoot(substitute);
-                        // _root = substitute;
                     else
                         isLeftChild ? toDelete->parent->leftC = substitute : toDelete->parent->rightC = substitute;
                     toDelete->leftC->parent = substitute;
@@ -382,11 +377,11 @@ namespace ft{
             }
 
 
-            treeIterator<T, Compare> begin() const{ //useless
+            treeIterator<T, Compare> begin() const{
                 return treeIterator<T, Compare>(findMin());
             }
 
-            treeIterator<T, Compare> end()const{ //useless
+            treeIterator<T, Compare> end()const{
                 return treeIterator<T, Compare>(_end);
             }
 
@@ -433,57 +428,6 @@ namespace ft{
                 }   
                 return (treeNode);
             }
-
-            // pair<treeIterator<T, Compare>,treeIterator<T, Compare> >             equal_range (const T& k) const{
-
-            //     ft::pair p(k, mapped_type());
-            //     pair<treeIterator<T, Compare>, treeIterator<T, Compare> > ret;
-
-            //     if (findNode(p) != _end)
-            //     {
-            //         treeIterator<T, Compare> low(lower_bound(k));
-            //         treeIterator<T, Compare> up(upper_bound(k));
-            //         // treeIterator<T, Compare> low = lower_bound(k);
-            //         // treeIterator<T, Compare> up = upper_bound(k);
-            //         ret = ft::make_pair(low, up);
-            //     }
-            //     else
-            //     {
-            //         treeIterator<T, Compare> up(upper_bound(k));
-            //         ret = ft::make_pair(up, up);
-            //     }
-            //         return ret;
-            // }
-
-
-
-
-            /*----------UTILS---------------*/
-
-            void printBT(const std::string& prefix, const node* n, bool isLeft)
-            {
-                if( n != NULL )
-                {
-                    std::cout << prefix;
-
-                    std::cout << (isLeft ? "├──" : "└──" );
-
-                    // print the value of the n
-                    std::cout << n->pair.first << std::endl;
-
-                    // enter the next tree level - left and right branch
-                    printBT( prefix + (isLeft ? "│   " : "    "), n->leftC, true);
-                    printBT( prefix + (isLeft ? "│   " : "    "), n->rightC, false);
-                }
-                // else
-                //     std::cout << "tree is empty" << std::endl;
-            }
-
-            void printBT(const node* n)
-            {
-                printBT("", n, false);
-            }
-
 
     };
     

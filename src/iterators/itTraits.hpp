@@ -22,7 +22,7 @@ namespace ft{
     };
 
     template<class T>
-    class ft::iterator_traits<T *>
+    class iterator_traits<T *>
     {
         public:
             typedef ptrdiff_t                   difference_type;
@@ -33,7 +33,7 @@ namespace ft{
     };
 
     template<class T>
-    class ft::iterator_traits<const T *>
+    class iterator_traits<const T *>
     {
         public:
             typedef ptrdiff_t                   difference_type;

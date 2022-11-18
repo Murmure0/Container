@@ -8,11 +8,11 @@ namespace ft{
     class reverse_iterator
     {
         public:
-                typedef typename iterator_traits<Iterator>::value_type         value_type;
-                typedef typename iterator_traits<Iterator>::difference_type    difference_type;
-                typedef typename iterator_traits<Iterator>::pointer            pointer;
-                typedef typename iterator_traits<Iterator>::reference          reference;
-                typedef typename iterator_traits<Iterator>::iterator_category  iterator_category;
+                typedef typename ft::iterator_traits<Iterator>::value_type         value_type;
+                typedef typename ft::iterator_traits<Iterator>::difference_type    difference_type;
+                typedef typename ft::iterator_traits<Iterator>::pointer            pointer;
+                typedef typename ft::iterator_traits<Iterator>::reference          reference;
+                typedef typename ft::iterator_traits<Iterator>::iterator_category  iterator_category;
                 typedef Iterator                                                               iterator_type;
 
         private:
@@ -23,7 +23,7 @@ namespace ft{
         /*CONSTRUCTORS & DESTRUCTOR */
         reverse_iterator(): _current(){ return; }
         explicit reverse_iterator(iterator_type it) : _current(it.base()){ return; }
-        template <class U>  reverse_iterator (const reverse_iterator<U>& other) : _current(other.base()) { return; }
+        template <class U>  reverse_iterator (const reverse_iterator<U>& other) : _current(other.base()){ return; }
         ~reverse_iterator(){ return; }
 
         iterator_type base() const{ 
@@ -85,7 +85,6 @@ namespace ft{
             return(reverse_iterator(_current + n));
         }
         reference         operator[](difference_type n) const{
-            // return static_cast<reference>(_current[n]);
             return *(*this + n);
         }
     };
@@ -132,7 +131,6 @@ namespace ft{
     template <class Iterator>
     reverse_iterator<Iterator> operator+(typename reverse_iterator<Iterator>::difference_type n,
             const reverse_iterator<Iterator>& x){
-                // return (x + n);
                 return (x.base() - n);
             }
 }
