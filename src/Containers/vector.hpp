@@ -248,8 +248,10 @@ namespace ft{
 
             /* Adds a new element at the end of the vector, after its current last element, may realloc */
             void push_back (const value_type& val){
-                if ( _size + 1 > _capacity)
-                    reserve(_size + 1);
+                if (!_size)
+                    reserve(1);
+                else if ( _size + 1 > _capacity)
+                    reserve(_size * 2);
                 _alloc.construct(_content + _size, val);
                 _size++;
             }
@@ -264,17 +266,17 @@ namespace ft{
                 
                 size_t n = ft::distance(begin(), position);
 
-                if ( _size + 1 > _capacity)
+                if (!_size)
                 {
-                    reserve(_size + 1);
-                    _size++;
-                }
-                else if (_size == 0)
-                {
-                    _alloc.allocate(1);
+                    _content = _alloc.allocate(1);
                     _alloc.construct(_content, val);
+                    _capacity++;
                     _size++;
                     return _content;
+                }
+                else if ( _size + 1 > _capacity)
+                {
+                    reserve(_size * 2);
                 }
 
                 size_t reverseN = (_size - n);
@@ -286,6 +288,7 @@ namespace ft{
                 }
                 _alloc.destroy(_content + n);
                 _alloc.construct(_content + n, val);
+                _size++;
                 return (_content + n);
             }
 
@@ -296,9 +299,9 @@ namespace ft{
 
                 if ( _size + n > _capacity )
                 {
-                    reserve(_size + n);
-                    _size += n;
+                    reserve((_size * 2) + n);
                 }
+                _size += n;
 
                 size_t diff = y - x;
                 for(size_t i = 0; i <= diff; i++, y--)
@@ -325,9 +328,9 @@ namespace ft{
 
                 if ( _size + range > _capacity)
                 {
-                    reserve(_size + range);
-                    _size += range; 
+                    reserve((_size * 2) + range);
                 }
+                _size += range; 
 
                 size_t diff = y - x;
                 for(size_t i = 0; i <= diff; i++, y--)
