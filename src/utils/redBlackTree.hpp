@@ -9,13 +9,17 @@
 
 namespace ft{
 
+    
+
     template <class T, class Compare = ft::less<T>, class Alloc = std::allocator<T> >
     class BsT {
 
         public:
 
             typedef Compare             value_compare;
-        
+
+            // template <class T, class Compare, class Alloc >
+            // class BsT<T, Compare, Alloc>::node;
             class node;
 
 
@@ -104,6 +108,7 @@ namespace ft{
             void    setNewRoot(node* root) //if you have to change the root, use this method instead of "="
             {
                 _root = root;
+                root->col = BLACK;
                 _end->end = root; //useless to have end inside of end so we put the root instead (useful for --end)
             }
 
@@ -116,52 +121,33 @@ namespace ft{
 
             /* -----------INSERTS------------- */
 
-            node *compare(T p, node *n){
-                if (_comp(p, n->pair) && n->leftC)
-                    return (n->leftC);
-                else if(_comp(n->pair, p) && n->rightC)
-                    return (n->rightC);
-                else
-                    return n;
-            }
-
+            //HERE
             node* insertNode(T p){
-                node *tmp = _root;
-                node *tmp2 = NULL;
-                if (tmp == _end){
+                if (_root == _end){
                     _root = _alloc.allocate(1);
-                    _alloc.construct(_root, node(_end, p, _comp));
-                    setEndAfter(_root);
+                    _alloc.construct(_root, node(_end, p, NULL, _end, _end, _comp));
                     setNewRoot(_root);
                     _size++;
-                    if (_root->leftC == _end && _root->rightC == _end){
-                    }
                     return _root;
                 }
+
+                node *tmp = _root;
+                node *tmp2 = NULL;
                 while (tmp != _end){
-                    if (!_comp(p,tmp->pair) && !_comp(tmp->pair, p))
+                    tmp2 = tmp;
+                    if (_comp(p, tmp->pair)) //tmp > p
+                        tmp = tmp->leftC;
+                    else if (_comp(tmp->pair, p)) // p > tmp
+                        tmp = tmp->rightC;
+                    else
                         return NULL;
-                    tmp2 = compare(p, tmp);
-                    if (tmp2 == tmp || tmp2 == _end)
-                        break;
-                    else 
-                        tmp = tmp2;
                 }
-                if (_comp(p, tmp->pair)){
-                    (tmp->leftC) = _alloc.allocate(1);
-                    _alloc.construct((tmp->leftC), node(_end, p, tmp, NULL, NULL, _comp));
-                    setEndAfter(tmp->leftC);
-                    _size++;
-                    return tmp->leftC;
-                }
-                else if (_comp(tmp->pair, p)){
-                    (tmp->rightC) = _alloc.allocate(1);
-                    _alloc.construct((tmp->rightC), node(_end, p, tmp, NULL, NULL, _comp));
-                    setEndAfter(tmp->rightC);
-                   _size++;  
-                   return tmp->rightC;
-                }
-                return NULL;
+                tmp = _alloc.allocate(1);
+                _alloc.construct(tmp, node(_end, p, tmp2, _end, _end, _comp));
+                _size++;
+                (_comp(p, tmp2->pair)) ? tmp2->leftC = tmp : tmp2->rightC = tmp;
+                fixInsert(tmp);
+                return tmp;
             }         
 
             pair<treeIterator<T, Compare>, bool> insert_val(const T& val){
@@ -197,8 +183,9 @@ namespace ft{
                     _alloc.construct((tmp->leftC), node(_end, val, tmp, NULL, NULL, _comp));
                     setEndAfter(tmp->leftC);
                     tmp = tmp->leftC;
+                    //fixInsert(tmp);
                 }
-                _size++;  
+                _size++;
                 return tmp;
             }
 
@@ -291,7 +278,7 @@ namespace ft{
 
                     node *substitute = _alloc.allocate(1);
                     _alloc.construct(substitute, node(_end, prevToDelete->pair, toDelete->parent, toDelete->leftC, toDelete->rightC, _comp));
-
+                    //substitute == red ?
                     if (toDelete == _root)
                         setNewRoot(substitute);
                     else
@@ -429,6 +416,192 @@ namespace ft{
                 return (treeNode);
             }
 
+        void leftRot(node* n){
+            node* tmp = (n->rightC->leftC);
+
+            if (n == _root){
+                _root = n->rightC;
+            }
+            else {
+    
+                bool isLeftChild = (n->parent->leftC == n ? true : false);
+                if (isLeftChild)
+                    n->parent->leftC = n->rightC;
+                else
+                    n->parent->rightC = n->rightC;
+            }
+            n->rightC->leftC = n; 
+            n->rightC->parent = n->parent; 
+            n->parent = n->rightC; 
+            n->rightC = tmp; 
+            tmp->parent = n; 
+        }
+
+
+
+        void rightRot(node* n){
+            node* tmp = (n->leftC->rightC);
+
+            if (n == _root){
+                _root = n->leftC;
+            }
+            else {
+                bool isLeftChild = (n->parent->leftC == n ? true : false);
+                if (isLeftChild)
+                    n->parent->leftC = n->leftC;
+                else
+                    n->parent->rightC = n->leftC;
+            }
+            n->leftC->rightC = n;
+            n->leftC->parent = n->parent;
+            n->parent = n->rightC;
+            n->leftC = tmp;
+            tmp->parent = n;
+        }
+
+        void recolor(node* n){
+            n->col = !n->col;
+        }
+
+        void colorRed(node *n){
+            n->col = RED;
+        }
+
+        void colorBlack(node *n){
+            n->col = BLACK;
+        }
+
+        void fixInsert(node* n){
+            node* parent = n->parent;
+            //proteger si pas de grandparent
+            if (parent->col == BLACK)
+                return;
+
+            node* gParent = parent->parent;
+            node* uncle = (gParent->leftC == parent ? gParent->rightC : gParent->leftC);
+                std::cout << "tagadatsointsoin" << std::endl;
+            node* sib = (parent->leftC == n ? parent->rightC : parent->leftC);
+
+            if(uncle->col == RED){
+
+                recolor(parent);
+                recolor(uncle);
+                if (gParent != _root)
+                    recolor(gParent);
+            }
+            else{
+                bool parentIsRightChild = ((gParent->rightC == parent ? true : false));
+                bool nodeIsRightChild = ((parent->rightC == n ? true : false));
+
+                if (parentIsRightChild && nodeIsRightChild){
+                    leftRot(gParent);
+                    sib = gParent;
+                    sib->col = RED;
+                    parent->col = BLACK;
+                }
+                else if (parentIsRightChild && !nodeIsRightChild){
+                    rightRot(parent);
+                    leftRot(n->parent);
+                    sib = (n->parent->rightC == n ? n->parent->leftC : n->parent->rightC);
+                    sib->col = RED;
+                    n->parent->col = BLACK;
+                }
+                else if(!parentIsRightChild && !nodeIsRightChild) //debut de la version mirror
+                {
+                    rightRot(gParent);
+                    sib = gParent;
+                    sib->col = RED;
+                    parent->col = BLACK;
+                }
+                else if (!parentIsRightChild && !nodeIsRightChild){
+                    leftRot(parent);
+                    rightRot(n->parent);
+                    sib = (n->parent->rightC == n ? n->parent->leftC : n->parent->rightC);
+                    sib->col = RED;
+                    n->parent->col = BLACK;
+                }
+            }
+        }
+
+        void fixDelete(node* n){
+
+            if (n->col == RED)
+                return;
+            node* redChild = (n->leftC->col == RED ? n->leftC : n->rightC);
+            if(n->leftC->col == RED || n->rightC.col == RED){
+
+            }
+
+            while(n != _root && n->col == BLACK){
+                //has a red child ? whatever ....
+                    if(n->parent->leftC == n){
+
+                        node* sib = (parent->leftC == n ? parent->rightC : parent->leftC);
+                        bool sibIsRed = (sib->col == RED ? true : false);
+
+                        if(sibIsRed){
+                            recolor(sib);
+                            recolor(n->parent);
+                            leftRot(n->parent);
+                        }
+                        else if (!sibIsRed && sib->leftC->col == BLACK && sib->rightC->col == BLACK){
+                            sib->col = RED;
+                            if(n->parent == RED){
+                                recolor(n->parent)
+                                return;
+                            }
+                            fixDelete(n->parent);
+                        }
+                        else if (!sibIsRed && sib->leftC->col == BLACK && sib->rightC->col == BLACK){
+                            recolor(sib);
+                            recolor(sib->leftC);
+                            rightRot(sib);
+
+                            sib = (parent->leftC == n ? parent->rightC : parent->leftC);
+                            sib->rightC->col = BLACK;
+                            n->parent->col = BLACK;
+                            leftRot(n->parent);
+                        }
+                        else if (!sibIsRed && sib->rightC->col == RED){
+                            sib->rightC->col = BLACK;
+                            n->parent->col = BLACK;
+                            leftRot(n->parent);
+                        }
+                    }
+                    else if (n->parent->rightC == n){
+                        else if(sibIsRed){
+                            recolor(sib);
+                            recolor(n->parent);
+                            rightRot(n->parent);
+                        }
+                        else if (!sibIsRed && sib->rightC->col == BLACK && sib->leftC->col == BLACK){
+                            sib->col = RED;
+                            if(n->parent == RED){
+                                recolor(n->parent)
+                                return;
+                            }
+                            fixDelete(n->parent);
+                        }
+                        else if (!sibIsRed && sib->rightC->col == BLACK && sib->leftC->col == BLACK){
+                            recolor(sib);
+                            recolor(sib->rightC);
+                            rightRot(sib);
+
+                            sib = (parent->rightC == n ? parent->leftC : parent->rightC);
+                            sib->leftC->col = BLACK;
+                            n->parent->col = BLACK;
+                            rightRot(n->parent);
+                        }
+                        else if (!sibIsRed && sib->leftC->col == RED){
+                            sib->leftC->col = BLACK;
+                            n->parent->col = BLACK;
+                            rightRot(n->parent);
+                        }
+
+                    }
+
+            }
+        }
     };
     
 }
