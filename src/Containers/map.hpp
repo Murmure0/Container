@@ -178,6 +178,7 @@ namespace ft{
                     pair<iterator, bool> ret = _tree.insert_val(*first);
                     if (ret.second == true)
                         _size++;
+                    this->_tree.printBT(this->_tree.getRoot());
                 }
             }
 

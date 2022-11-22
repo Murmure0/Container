@@ -228,7 +228,8 @@ namespace ft{
 
 
             void deleteNode(node* toDelete){  
-                // std::cout << "1 - COUCOU" << std::endl;      
+                // std::cout << "1 - COUCOU" << std::endl;     
+                printBT(_root); 
                 bool isLeftChild = false;
                 node* toFix;
 
@@ -281,12 +282,13 @@ namespace ft{
                         toFix = toDelete->parent->rightC;//
                     }
                     hasLeftChild ? toDelete->leftC->parent = toDelete->parent : toDelete->rightC->parent = toDelete->parent;
-                    _alloc.destroy(toDelete);
-                    _alloc.deallocate(toDelete, 1);
+                    toFix->col = toDelete->col;
                     _size--;
                     if (toFix->col == BLACK){
                         // std::cout << "2 - COCO" << std::endl;      
                         fixDelete(toFix);
+                    _alloc.destroy(toDelete);
+                    _alloc.deallocate(toDelete, 1);
                     }
                     return ;
                 }
@@ -453,7 +455,8 @@ namespace ft{
             n->rightC->parent = n->parent; 
             n->parent = n->rightC; 
             n->rightC = tmp; 
-            tmp->parent = n; 
+            if (tmp != _end)
+                tmp->parent = n;
         }
 
 
@@ -473,9 +476,10 @@ namespace ft{
             }
             n->leftC->rightC = n;
             n->leftC->parent = n->parent;
-            n->parent = n->rightC;
+            n->parent = n->leftC;
             n->leftC = tmp;
-            tmp->parent = n;
+            if (tmp != _end)
+                tmp->parent = n;
         }
 
         void recolor(node* n){
@@ -513,12 +517,14 @@ namespace ft{
                 bool nodeIsRightChild = ((parent->rightC == n ? true : false));
 
                 if (parentIsRightChild && nodeIsRightChild){
+                    // std::cout << "Fix Insert Case 1" << std::endl;
                     leftRot(gParent);
                     sib = gParent;
                     sib->col = RED;
                     parent->col = BLACK;
                 }
                 else if (parentIsRightChild && !nodeIsRightChild){
+                    // std::cout << "Fix Insert Case 2" << std::endl;
                     rightRot(parent);
                     leftRot(n->parent);
                     sib = (n->parent->rightC == n ? n->parent->leftC : n->parent->rightC);
@@ -527,12 +533,15 @@ namespace ft{
                 }
                 else if(!parentIsRightChild && !nodeIsRightChild) //debut de la version mirror
                 {
+                    // std::cout << "Fix Insert Case 3" << std::endl;
+                    //ICI
                     rightRot(gParent);
                     sib = gParent;
                     sib->col = RED;
                     parent->col = BLACK;
                 }
                 else if (!parentIsRightChild && !nodeIsRightChild){
+                    // std::cout << "Fix Insert Case 4" << std::endl;
                     leftRot(parent);
                     rightRot(n->parent);
                     sib = (n->parent->rightC == n ? n->parent->leftC : n->parent->rightC);
@@ -563,23 +572,24 @@ namespace ft{
                     // if (sib == _end)
                         // std::cout << "TOP" << std::endl;
                     if(sibIsRed){
-                        // std::cout << "Case 1" << std::endl;      
+                        std::cout << "Case 1" << std::endl;      
 
                         recolor(sib);
                         recolor(n->parent);
                         leftRot(n->parent);
                     }
                     else if (!sibIsRed && sib->leftC->col == BLACK && sib->rightC->col == BLACK){
-                        // std::cout << "Case 2" << std::endl;      
+                        std::cout << "Case 2" << std::endl;      
                         sib->col = RED;
                         if(n->parent->col == RED){
                             recolor(n->parent);
                             return;
                         }
-                        fixDelete(n->parent);
+                        n = n->parent;
+                        continue;
                     }
                     else if (!sibIsRed && sib->leftC->col == BLACK && sib->rightC->col == BLACK){
-                        // std::cout << "Case 3" << std::endl;      
+                        std::cout << "Case 3" << std::endl;      
                         recolor(sib);
                         recolor(sib->leftC);
                         rightRot(sib);
@@ -590,30 +600,32 @@ namespace ft{
                         leftRot(n->parent);
                     }
                     else if (!sibIsRed && sib->rightC->col == RED){
-                        // std::cout << "Case 4" << std::endl;      
+                        std::cout << "Case 4" << std::endl;      
                         sib->rightC->col = BLACK;
                         n->parent->col = BLACK;
                         leftRot(n->parent);
+                        break;
                     }
                 }
                 else if (n->parent->rightC == n){
                     if (sibIsRed){
-                        // std::cout << "Case 5" << std::endl;      
+                        std::cout << "Case 5" << std::endl;      
                         recolor(sib);
                         recolor(n->parent);
                         rightRot(n->parent);
                     }
                     else if (!sibIsRed && sib->rightC->col == BLACK && sib->leftC->col == BLACK){
-                        // std::cout << "Case 6" << std::endl;      
+                        std::cout << "Case 6" << std::endl;      
                         sib->col = RED;
                         if(n->parent->col == RED){
                             recolor(n->parent);
                             return;
                         }
-                        fixDelete(n->parent);
+                        n = n->parent;
+                        continue;
                     }
                     else if (!sibIsRed && sib->rightC->col == BLACK && sib->leftC->col == BLACK){
-                        // std::cout << "Case 7" << std::endl;      
+                        std::cout << "Case 7" << std::endl;      
                         recolor(sib);
                         recolor(sib->rightC);
                         rightRot(sib);
@@ -624,13 +636,15 @@ namespace ft{
                         rightRot(n->parent);
                     }
                     else if (!sibIsRed && sib->leftC->col == RED){
-                        // std::cout << "Case 8" << std::endl;      
+                        std::cout << "Case 8" << std::endl;      
                         sib->leftC->col = BLACK;
                         n->parent->col = BLACK;
                         rightRot(n->parent);
+                        break;
                     }
                 }
             }
+            // n->col = BLACK;
         }
 
         void printBT(const std::string& prefix, const node* n, bool isLeft)
@@ -646,6 +660,8 @@ namespace ft{
                         std::cout << "\033[1;31m" << n->pair.first << "\033[0m" << std::endl;
                     else
                         std::cout << n->pair.first << std::endl;
+                    if (n != _root && n != _end && n->parent == _end)
+                        std::cout << "HIS PARENT DISAPPEARED" << std::endl;
 
                     // enter the next tree level - left and right branch
                     printBT( prefix + (isLeft ? "│   " : "    "), n->leftC, true);
