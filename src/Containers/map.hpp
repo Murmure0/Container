@@ -53,8 +53,8 @@ namespace ft{
 
             typedef ft::treeIterator< value_type, value_compare, allocator_type, node_type >                   iterator;
             typedef ft::treeIterator< const value_type, value_compare, allocator_type, const_node_type>        const_iterator;
-            typedef ft::reverse_iterator< iterator >                                                            reverse_iterator;
-            typedef ft::reverse_iterator< const_iterator >                                                      const_reverse_iterator;
+            typedef ft::reverse_iterator< iterator >                                                           reverse_iterator;
+            typedef ft::reverse_iterator< const_iterator >                                                     const_reverse_iterator;
 
         private :
 
@@ -178,7 +178,6 @@ namespace ft{
                     pair<iterator, bool> ret = _tree.insert_val(*first);
                     if (ret.second == true)
                         _size++;
-                    this->_tree.printBT(this->_tree.getRoot());
                 }
             }
 
@@ -200,8 +199,11 @@ namespace ft{
             }
 
             void erase (iterator first, iterator last){
-                for(;first != last; first++){
-                    erase(first);
+                while (first != last)
+                {
+                    iterator tmp = first;
+                    ++first;
+                    erase(tmp);
                 }
             }
 
