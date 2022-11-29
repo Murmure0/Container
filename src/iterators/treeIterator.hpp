@@ -82,10 +82,7 @@ namespace ft{
                 return reinterpret_cast<const const_iterator & >(it);
             }
 
-			// operator			node_pointer() const;
-
             node* const &base() const{return _node;}
-
         
             bool getComp(Pair lhs, Pair rhs) const{return _node->comp(lhs, rhs);}
 
@@ -94,8 +91,7 @@ namespace ft{
 
             node*    _node;
     };
-
-
+    
             template <class Pair1, class Pair2, class Compare, class Alloc, class Node1, class Node2>
             bool operator== (const treeIterator< Pair1, Compare, Alloc, Node1 >& lhs, const treeIterator<Pair2, Compare, Alloc, Node2>& rhs){
                 return ( lhs.base() == reinterpret_cast<Node1*>(rhs.base()) );

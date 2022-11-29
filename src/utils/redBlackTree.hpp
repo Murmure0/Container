@@ -16,19 +16,11 @@ namespace ft{
 
         public:
 
-            typedef Compare             value_compare;
-
-            // template <class T, class Compare, class Alloc >
-            // class BsT<T, Compare, Alloc>::node;
             class node;
-
-
+            typedef Compare             value_compare;
             typedef typename Alloc::template rebind<node>::other allocator_type;
 
         private:
-
-
-            // var privee de tree :
 
             node*                   _root;
             node*                   _end;
@@ -46,8 +38,6 @@ namespace ft{
                 node* toDel = tmp;
                 while (tmp != _end){
                     tmp = findNext(tmp);
-                    // std::cout << "LET'S DELETE : " << toDel->pair.first << std::endl;
-                    // printBT(_root);
                     deleteNode(toDel);
                     toDel = tmp;
                 }
@@ -107,7 +97,7 @@ namespace ft{
                 this->_end = ptr;
             }
 
-            void    setNewRoot(node* root) //if you have to change the root, use this method instead of "="
+            void    setNewRoot(node* root)
             {
                 _root = root;
                 root->col = BLACK;
@@ -120,10 +110,9 @@ namespace ft{
             }  
 
 
-
             /* -----------INSERTS------------- */
 
-            //HERE
+
             node* insertNode(T p){
                 if (_root == _end){
                     _root = _alloc.allocate(1);
@@ -238,8 +227,6 @@ namespace ft{
 
                 if (toDelete->leftC == _end && toDelete->rightC == _end){ // No Child
                     if (toDelete->parent){
-                
-                        // isLeftChild ? toFix = toDelete->parent->leftC : toFix = toDelete->parent->rightC;
                         toDelete->leftC = NULL;
                         toDelete->rightC = NULL;
                         fixDelete(toDelete);
@@ -262,20 +249,20 @@ namespace ft{
      
                 //One Child
                 if ((toDelete->rightC && toDelete->leftC == _end) || (toDelete->rightC == _end && toDelete->leftC)){
-                    bool hasLeftChild = (toDelete->leftC != _end ? true : false); // toDelete has a left child
+                    bool hasLeftChild = (toDelete->leftC != _end ? true : false);                                       // toDelete has a left child
                     bool childIsRed = (hasLeftChild ? (toDelete->leftC->col == RED) : (toDelete->rightC->col == RED));
             
                     if (toDelete == _root){
                         hasLeftChild ? setNewRoot(toDelete->leftC) : setNewRoot(toDelete->rightC);
-                        toFix = _root;//
+                        toFix = _root;
                     }
                     else if (isLeftChild){
                         hasLeftChild ? toDelete->parent->leftC = toDelete->leftC : toDelete->parent->leftC = toDelete->rightC;
-                        toFix = toDelete->parent->leftC;//
+                        toFix = toDelete->parent->leftC;
                     }
                     else{
                         hasLeftChild ? toDelete->parent->rightC = toDelete->leftC : toDelete->parent->rightC = toDelete->rightC;
-                        toFix = toDelete->parent->rightC;//
+                        toFix = toDelete->parent->rightC;
                     }
                     hasLeftChild ? toDelete->leftC->parent = toDelete->parent : toDelete->rightC->parent = toDelete->parent;
                     toFix->col = toDelete->col;
@@ -508,7 +495,6 @@ namespace ft{
                 node* parent = n->parent;
                 node* gParent = parent->parent;
                 node* uncle = (gParent->leftC == parent ? gParent->rightC : gParent->leftC);
-                // node* sib = (parent->leftC == n ? parent->rightC : parent->leftC);
 
                 if(uncle->col == RED){
                     colorBlack(uncle);
@@ -548,7 +534,7 @@ namespace ft{
         }
 
         void fixDelete(node* n){
-            while(n != _root && n->col == BLACK){ //Case 3: x is a black node
+            while(n != _root && n->col == BLACK){
                 if (n == n->parent->leftC)
                 {
                     node *sib = n->parent->rightC;

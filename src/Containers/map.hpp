@@ -19,7 +19,7 @@ namespace ft{
 
             // CLASSES
 
-            class value_compare : public ft::binary_function< pair<const Key, T>, pair<const Key, T>, bool >
+            class value_compare : public ft::binary_function< pair<const Key, T>, pair<const Key, T>, bool > // Class to compare only the key of the pair
             {
                 friend class map;
 
@@ -79,12 +79,10 @@ namespace ft{
                 insert(first, last);
             }
 
-            //SEE YOU LATER
             map (const map& x) : _tree(x._tree), _size(x._size), _key_comp(x._key_comp), _value_comp(x._value_comp), _alloc(x._alloc)
             {
                 return ;
             }
-
 
             ~map(){}
 

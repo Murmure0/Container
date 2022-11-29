@@ -144,12 +144,12 @@ namespace ft{
             /* CAPACITY */
             size_type size() const{ return _size; }
 
+
             /* Returns the maximum number of elements, each of member type value_type (an alias of allocator's template parameter)
                 that could potentially be allocated by a call to member allocate.
                 A call to member allocate with the value returned by this function can still fail to allocate the requested storage. */    
             size_type max_size() const{ return _alloc.max_size(); }
 
-            /* A TEST UNE FOIS PUSHBACK FAIT */
             void resize(size_type n, value_type val = value_type()){
                 if (n < _size)
                 {
@@ -171,7 +171,6 @@ namespace ft{
                     
                 }
             }
-
 
             size_type capacity() const{ return _capacity; };
             bool empty() const { return _size == 0; }
@@ -204,7 +203,6 @@ namespace ft{
             const_reference at (size_type n) const{ 
                 if (n >= _size)
                     throw std::out_of_range("ft::vector");
-                // return &(_content + n);}
                 return *(_content + n);}
 
             reference front(){ return *_content; }
