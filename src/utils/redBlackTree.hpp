@@ -301,13 +301,14 @@ namespace ft{
                 node* toDel = tmp;
                 while (tmp){
                     tmp = findNext(tmp);
-                    if(tmp == _end)
+                    if(tmp == _end){
+                        _root = _end;
+                        _size = 0;
                         break;
+                    }
                     deleteNode(toDel);
                     toDel = tmp;
                 }
-                _root = _end;
-                _size = 0;
             }
 
 

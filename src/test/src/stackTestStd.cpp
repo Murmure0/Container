@@ -1,12 +1,10 @@
-#include "../containers/stack.hpp"
-#include <iostream>
-#include <stack>
+#include "../testStd.hpp"
 
-int main() {
+void stackTest() {
 
-    ft::stack<int> myVector;
-    ft::stack<int> myVector2;
-    ft::stack<int> myVector3;
+    std::stack<int> myVector;
+    std::stack<int> myVector2;
+    std::stack<int> myVector3;
 
     std::cout << "myVector.size(): " << myVector.size() <<std::endl;
     for(int i = 0; i < 25; i++){
@@ -44,19 +42,4 @@ int main() {
 
 
     std::cout << "standard :" << std::endl<< std::endl;
-
-    std::stack<int> stand;
-
-    std::cout << "stand.size(): " << stand.size() <<std::endl;
-    for(int i = 0; i < 25; i++)
-        stand.push(i);
-    std::cout << "PUSH : stand.size(): " << stand.size() <<std::endl;
-    std::cout << "stand.top(): " << stand.top() <<std::endl;
-    stand.pop();
-    std::cout << "POP : stand.size(): " << stand.size() <<std::endl;
-    std::cout << "stand.top(): " << stand.top() <<std::endl;
-    std::cout << "EMPTY : stand.empty(): " << stand.empty() << std::endl;
-    for(int i = 0; i < 24; i++)
-        stand.pop();
-    std::cout << "EMPTY : stand.empty(): " << stand.empty() << std::endl;
 }

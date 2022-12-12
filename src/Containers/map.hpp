@@ -220,8 +220,10 @@ namespace ft{
             }
 
             void clear(){
-                _tree.clear();
-                _size = _tree.getSize();
+                if (_size != 0){
+                    _tree.clear();
+                    _size = _tree.getSize();
+                }
             }
 
             key_compare key_comp() const{

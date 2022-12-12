@@ -1,43 +1,34 @@
-#include "../containers/vector.hpp"
-#include <vector>
-#include <string>
-#include <iostream>
-#include <stack>
+#include "../testStd.hpp"
 
-int main()
+void vectorTest()
 {
-     //std::vector<std::string> theirVector(5, std::string("lol"));
-    // ft::vector<std::string> myVector(3, std::string("lol"));
-
-    std::vector<int> theirVector(5, 25);
-    std::stack<int> theirVector(5, 25);
 
     std::cout << "empty constructor" << std::endl;
     std::cout << std::endl;
-    ft::vector<int> emptyVector;
+    std::vector<int> emptyVector;
 
     std::cout << "myVector constructor" << std::endl;
     std::cout << std::endl;
-    ft::vector<int> myVector(3, 28);
-    ft::vector<int> secondVector(10, 89);
+    std::vector<int> myVector(3, 28);
+    std::vector<int> secondVector(10, 89);
 
     std::cout << "mySuperVector constructor" << std::endl;
-    ft::vector<ft::vector<int> > mySuperVector;
+    std::vector<std::vector<int> > mySuperVector;
     std::cout << std::endl;
 
     /* constructor by copy */
     std::cout << "Constructor by copy foo" << std::endl;
-    ft::vector<int> foo(myVector);
+    std::vector<int> foo(myVector);
     std::cout << std::endl;
 
     std::cout << "Constructor by range of iterator fooFoo" << std::endl;
-    ft::vector<int>::iterator it = foo.begin();
-    ft::vector<int>::iterator ite = foo.end();
-    ft::vector<int> fooFoo(it, ite);
+    std::vector<int>::iterator it = foo.begin();
+    std::vector<int>::iterator ite = foo.end();
+    std::vector<int> fooFoo(it, ite);
     std::cout << std::endl;
     
     std::cout << "Constructor by operator=" << std::endl;
-    ft::vector<int> bar = foo;
+    std::vector<int> bar = foo;
     std::cout << std::endl;
 
     std::cout << "random_access_iterator: " << std::endl;
@@ -48,8 +39,8 @@ int main()
     std::cout << std::endl;
 
     std::cout << "Reverse_iterator: " << std::endl;
-    ft::vector<int>::reverse_iterator rite = bar.rend();
-    ft::vector<int>::reverse_iterator rit = bar.rbegin();
+    std::vector<int>::reverse_iterator rite = bar.rend();
+    std::vector<int>::reverse_iterator rit = bar.rbegin();
     for(; rit != rite; rit++)
         std::cout << *(rit) << std::endl;
     std::cout << std::endl;
@@ -62,20 +53,20 @@ int main()
     std::cout << std::endl;
     
     /* test apres pushback */
-    // std::cout << "Resizing of foo to 1: "  << std::endl;
-    // foo.resize(1);
-    // ft::vector<int>::iterator it = foo.begin();
-    // ft::vector<int>::iterator ite = foo.end();
-    // for(;it != ite; ++it)
-    //     std::cout << *(it) << std::endl;
-    // std::cout << foo.size() << std::endl;
-    // std::cout << "Resizing of foo to 10 with 19: "  << std::endl;
-    // foo.resize(10, 19);
-    // ft::vector<int>::iterator it = foo.begin();
-    // ft::vector<int>::iterator ite = foo.end();
-    // for(;it != ite; ++it)
-    //     std::cout << *(it) << std::endl;
-    // std::cout << std::endl;
+    std::cout << "Resizing of foo to 1: "  << std::endl;
+    foo.resize(1);
+    std::vector<int>::iterator itPb = foo.begin();
+    std::vector<int>::iterator itePb = foo.end();
+    for(;it != ite; ++it)
+        std::cout << *(it) << std::endl;
+    std::cout << foo.size() << std::endl;
+    std::cout << "Resizing of foo to 10 with 19: "  << std::endl;
+    foo.resize(10, 19);
+    itPb = foo.begin();
+    itePb = foo.end();
+    for(;it != ite; ++it)
+        std::cout << *(it) << std::endl;
+    std::cout << std::endl;
 
     std::cout << "Capacity: " << foo.capacity() << std::endl;
     std::cout << std::endl;
@@ -115,8 +106,8 @@ int main()
     std::cout << " Assign: " << std::endl;
     std::cout << " Foo can contain the content of secondVector: " << std::endl;
     std::cout << "content secondVector : " << std::endl;
-    ft::vector<int>::iterator Sit = secondVector.begin();
-    ft::vector<int>::iterator Site = secondVector.end();
+    std::vector<int>::iterator Sit = secondVector.begin();
+    std::vector<int>::iterator Site = secondVector.end();
     for (; Sit != Site; Sit++)
         std::cout << *Sit << std::endl;
     std::cout << std::endl;
@@ -132,8 +123,8 @@ int main()
     std::cout << "Assign, range version : foo.asign(first, last)" << std::endl;
     Sit = secondVector.begin();
     foo.assign(Sit, Site);
-    ft::vector<int>::iterator mop = foo.begin();
-    ft::vector<int>::iterator mope = foo.end();
+    std::vector<int>::iterator mop = foo.begin();
+    std::vector<int>::iterator mope = foo.end();
     for (; mop != mope; mop++)
         std::cout << *mop << std::endl;
     std::cout << std::endl;
@@ -183,14 +174,14 @@ int main()
     
    { 
         std::cout << "Insert test : ito= myVector.begin() + 2 // myVector.insert(ito, 1989) " << std::endl;
-        ft::vector<int> pbVector;
+        std::vector<int> pbVector;
         pbVector.push_back(20);
         pbVector.push_back(19);
         pbVector.push_back(18);
         pbVector.push_back(17);
         pbVector.push_back(16);
-        ft::vector<int>::iterator ito = (pbVector.end());
-        ft::vector<int>::iterator ret = pbVector.insert(ito, 1989);
+        std::vector<int>::iterator ito = (pbVector.end());
+        std::vector<int>::iterator ret = pbVector.insert(ito, 1989);
         std::cout << "Content of ret : " << *ret << std::endl;
         
         it = pbVector.begin();
@@ -202,7 +193,7 @@ int main()
 
     {
         std::cout << "Multi-Insert test " << std::endl;
-        ft::vector<int> miVector;
+        std::vector<int> miVector;
 
         miVector.push_back(9);
         miVector.push_back(8);
@@ -216,7 +207,7 @@ int main()
         miVector.push_back(13);
 
         std::cout << std::endl;
-        ft::vector<int>::iterator ito = (miVector.end() - 5);
+        std::vector<int>::iterator ito = (miVector.end() - 5);
         miVector.insert(ito, 2, 1989);
         
         it = miVector.begin();
@@ -228,14 +219,14 @@ int main()
 
         std::cout << "Multi-Insert test with iterator + clear" << std::endl;
     {
-        ft::vector<int> potiVector;
+        std::vector<int> potiVector;
 
         potiVector.push_back(4);
         potiVector.push_back(3);
         potiVector.push_back(2);
         potiVector.push_back(1);
 
-        ft::vector<int> groVector;
+        std::vector<int> groVector;
         groVector.push_back(12);
         groVector.push_back(11);
         groVector.push_back(10);
@@ -244,13 +235,13 @@ int main()
         groVector.push_back(7);
         groVector.push_back(6);
 
-        ft::vector<int>::iterator pit = potiVector.begin();
-        ft::vector<int>::iterator pite = potiVector.end();
-        ft::vector<int>::iterator git = groVector.end() -2;
+        std::vector<int>::iterator pit = potiVector.begin();
+        std::vector<int>::iterator pite = potiVector.end();
+        std::vector<int>::iterator git = groVector.end() -2;
         groVector.insert(git, pit, pite);
 
-        ft::vector<int>::iterator it = groVector.begin();
-        ft::vector<int>::iterator ite = groVector.end();
+        std::vector<int>::iterator it = groVector.begin();
+        std::vector<int>::iterator ite = groVector.end();
         for (; it != ite; it++)
             std::cout << *it << std::endl;
         std::cout << std::endl;
@@ -276,9 +267,9 @@ int main()
  
         std::cout << "Swap" << std::endl;
     {
-        ft::vector<int> foo(5, 50);
-        ft::vector<int>::iterator it = foo.begin();
-        ft::vector<int>::iterator ite = foo.end();
+        std::vector<int> foo(5, 50);
+        std::vector<int>::iterator it = foo.begin();
+        std::vector<int>::iterator ite = foo.end();
 
         std::cout << "content of foo : " << std::endl;
         for (; it != ite; it++)
@@ -288,7 +279,7 @@ int main()
         std::cout << std::endl;
 
 
-        ft::vector<int> bar(10, 21);
+        std::vector<int> bar(10, 21);
         it = bar.begin();
         ite = bar.end();
 
@@ -323,7 +314,7 @@ int main()
 
     std::cout << "Erase, single position : " << std::endl;
     {
-        ft::vector<int> miVector;
+        std::vector<int> miVector;
         miVector.push_back(9);
         miVector.push_back(8);
         miVector.push_back(7);
@@ -336,16 +327,16 @@ int main()
         miVector.push_back(13);
 
         std::cout << "size of miVector : " << miVector.size() <<std::endl;
-        ft::vector<int>::iterator iterase = (miVector.end() -1);
+        std::vector<int>::iterator iterase = (miVector.end() - 2);
         std::cout << "Value to delete = " << *iterase << std::endl;
 
-        ft::vector<int>::iterator it = miVector.begin();
-        ft::vector<int>::iterator ite = miVector.end();
+        std::vector<int>::iterator it = miVector.begin();
+        std::vector<int>::iterator ite = miVector.end();
         for (; it != ite; it++)
             std::cout << *it << std::endl;
         std::cout << std::endl;
 
-        ft::vector<int>::iterator ret = miVector.erase(iterase);
+        std::vector<int>::iterator ret = miVector.erase(iterase);
         it = miVector.begin();
         ite = miVector.end();
         for (; it != ite; it++)
@@ -400,7 +391,7 @@ int main()
         std::cout << std::endl;
         }
         {
-        ft::vector<int> miVector;
+        std::vector<int> miVector;
         miVector.push_back(9);
         miVector.push_back(8);
         miVector.push_back(7);
@@ -413,8 +404,8 @@ int main()
         miVector.push_back(13);
 
         std::cout << "Size of miVector : " << miVector.size() <<std::endl;
-        ft::vector<int>::iterator its = miVector.begin()+3;
-        ft::vector<int>::iterator itse = miVector.end();
+        std::vector<int>::iterator its = miVector.begin()+3;
+        std::vector<int>::iterator itse = miVector.end();
 
         std::cout << "Range to delete : " << std::endl;
         for (;its != itse; its++){
@@ -424,13 +415,13 @@ int main()
         std::cout << std::endl;
 
         std::cout << "Content of my vector, before erase :" << std::endl;
-        ft::vector<int>::iterator it = miVector.begin();
-        ft::vector<int>::iterator ite = miVector.end();
+        std::vector<int>::iterator it = miVector.begin();
+        std::vector<int>::iterator ite = miVector.end();
         for (; it != ite; it++)
             std::cout << *it << std::endl;
         std::cout << std::endl;
 
-        ft::vector<int>::iterator ret = miVector.erase(its,itse);
+        std::vector<int>::iterator ret = miVector.erase(its,itse);
         std::cout << "Content of my vector, after erase :" << std::endl;
         it = miVector.begin();
         ite = miVector.end();
@@ -440,6 +431,48 @@ int main()
         bool p = (ret==miVector.end());
         std::cout << "is ret end() : " << p << std::endl;
         std::cout << std::endl;
+    }
+
+    std::cout << "Relationnal Operators :" << std::endl;
+    {
+        std::vector<int> miVector;
+        miVector.push_back(9);
+        miVector.push_back(8);
+        miVector.push_back(7);
+        std::vector<int> miVector2;
+        miVector2.push_back(9);
+        miVector2.push_back(8);
+        miVector2.push_back(7);
+        std::vector<int> miVector3;
+        miVector3.push_back(9);
+        miVector3.push_back(8);
+        miVector3.push_back(7);
+        miVector3.push_back(7);
+        miVector3.push_back(7);
+        miVector3.push_back(7);
+
+        std::cout << "miVector.size() : " << miVector.size() << std::endl;
+        std::cout << "miVector2.size() : " << miVector2.size() << std::endl;
+        std::cout << "miVector3.size() : " << miVector3.size() << std::endl;
+
+        std::cout << "miVector == miVector2 / miVector == miVector3 " << std::endl;
+        std::cout << (miVector == miVector2) << "/" << (miVector == miVector3) << std::endl;
+
+        std::cout << "miVector != miVector2 / miVector != miVector3 : " << std::endl;
+        std::cout << (miVector != miVector2) << "/" << (miVector != miVector3) << std::endl;
+
+        std::cout << "miVector < miVector2 / miVector < miVector3 : " << std::endl;
+        std::cout << (miVector < miVector2) << "/" << (miVector < miVector3) << std::endl;
+
+        std::cout << "miVector <= miVector2 / miVector <= miVector3 : " << std::endl;
+        std::cout << (miVector <= miVector2) << "/" << (miVector <= miVector3) << std::endl;
+
+        std::cout << "miVector > miVector2 / miVector > miVector3 : " << std::endl;
+        std::cout << (miVector > miVector2) << "/" << (miVector > miVector3) << std::endl;
+
+        std::cout << "miVector >= miVector2 / miVector >= miVector3 : " << std::endl;
+        std::cout << (miVector >= miVector2) << "/" << (miVector >= miVector3) << std::endl;
+ 
     }
 
 }
